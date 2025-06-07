@@ -1,0 +1,42 @@
+---
+import { Icon } from "astro-icon/components";
+
+---
+
+<header>
+    <div class="main">
+        <a href="/">Calling of darkness</a>
+    </div>
+</header>
+
+<style lang="scss">
+    header {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 1em 0;
+        max-width: 1400px;
+        margin: 30px auto;
+        padding: 0 24px;
+
+        & .main {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+            font-family: var(--header-font);
+        }
+    }
+
+    @media (max-width: 650px) {
+        header {
+            flex-direction: column;
+            align-items: center;
+        }
+    }
+</style>
