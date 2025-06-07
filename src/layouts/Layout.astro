@@ -1,3 +1,8 @@
+---
+import Header from "@components/Header.astro";
+import "@styles/main.scss";
+---
+
 <!doctype html>
 <html lang="en">
 	<head>
@@ -5,10 +10,18 @@
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>Calling of darkness</title>
 	</head>
 	<body>
-		<slot />
+		<Header />
+		<div class="layout">
+			<aside>
+				<h2>Навигация</h2>
+			</aside>
+			<div class="content">
+				<slot />
+			</div>
+		</div>
 	</body>
 </html>
 
