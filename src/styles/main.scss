@@ -1,0 +1,62 @@
+@use "sass:map";
+@use "parts/mixins" as *;
+@use "parts/variables" as *;
+@use "parts/fonts";
+@use "parts/headings";
+@use "parts/dice";
+@use "themes/dark";
+
+
+:root {
+    // Fonts
+    --text-font: "Inter";
+    --header-font: "Spectral SC";
+    --code-font: "Victor Mono";
+
+    // Layout
+    --border-radius: 4px;
+
+    // Scrollbar
+    &::-webkit-scrollbar {
+        width: 13px;
+
+        &-track {
+            background-color: var(--bg-1);
+        }
+
+        &-thumb {
+            background-color: var(--primary-color);
+            margin: 20px;
+        }
+    }
+}
+
+html {
+    background-color: var(--bg-0);
+    color: var(--text-0);
+    font-family: var(--text-font);
+    line-height: 1.6em;
+
+    @include respond-to('small') {
+        font-size: map.get($font-sizes, 'small');
+    }
+
+    @include respond-to('medium') {
+        font-size: map.get($font-sizes, 'medium');
+    }
+
+    @include respond-to('large') {
+        font-size: map.get($font-sizes, 'large');
+    }
+}
+
+// Selection styles
+::selection {
+    background-color: var(--bg-selection);
+    color: var(--text-selection);
+}
+
+::-moz-selection {
+    background-color: var(--bg-selection);
+    color: var(--text-selection);
+}
