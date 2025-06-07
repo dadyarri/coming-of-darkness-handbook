@@ -1,6 +1,8 @@
 ---
 import Header from "@components/Header.astro";
 import "@styles/main.scss";
+import { Icon } from "astro-icon/components";
+import navigation from "@data/navigation.json";
 ---
 
 <!doctype html>
@@ -16,7 +18,21 @@ import "@styles/main.scss";
 		<Header />
 		<div class="layout">
 			<aside>
-				<h2>Навигация</h2>
+				<nav>
+					<h2>Справочники</h2>
+					<ul>
+						{
+							navigation.map((item) => (
+								<li>
+									<a href={`/${item.id}`}>
+										<Icon name={item.icon} />
+										{item.label}
+									</a>
+								</li>
+							))
+						}
+					</ul>
+				</nav>
 			</aside>
 			<div class="content">
 				<slot />

@@ -25,6 +25,9 @@
       ],
       "@layouts/*": [
         "src/layouts/*"
+      ],
+      "@data/*": [
+        "src/data/*"
       ]
     },
     "jsx": "react-jsx",
