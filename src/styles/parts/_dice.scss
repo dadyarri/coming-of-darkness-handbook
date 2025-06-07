@@ -11,3 +11,8 @@
     font-size: 12px;
     color: var(--text-0);
 }
+
+.rollable-dice[disabled] {
+    background-color: var(--bg-2);
+    cursor: not-allowed;
+  }
