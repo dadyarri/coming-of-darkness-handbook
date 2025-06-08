@@ -1,17 +1,35 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry } from "astro:content";
+import CardList from "@components/CardList.astro";
 
 const beasts = await getCollection("bestiary");
+const beastTypes = await getCollection("beastTypes");
+
+// Prepare legend items
+const legend = beastTypes.map(type => ({
+    icon: type.data.icon,
+    title: type.data.title
+}));
+
+// Prepare beast items
+const items = await Promise.all(beasts.map(async (beast) => {
+    const type = await getEntry(beast.data.type);
+    return {
+        id: beast.id,
+        title: beast.data.title,
+        icon: type.data.icon,
+        href: `/bestiary/${beast.id}`
+    };
+}));
+
+console.log(items);
 ---
 
 <Layout>
-    <h1>Бестиарий</h1>
-    <ul>
-    {beasts.map((beast) => <li>
-        <a href=`/bestiary/${beast.id}`>
-            {beast.data.title}
-        </a>
-    </li>)}
-    </ul>
+    <CardList 
+        title="Бестиарий"
+        items={items}
+        legend={legend}
+    />
 </Layout>
