@@ -1,0 +1,22 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { Icon } from "astro-icon/components";
+import { getCollection } from "astro:content";
+
+const magicSpecializations = await getCollection("magicSpecializations");
+---
+
+<Layout>
+    <h1>Гримуар</h1>
+
+    <ul class="legend">
+        {
+            magicSpecializations.map((specialization) => (
+                <li class="legend-item">
+                    <Icon name={specialization.data.icon} /> —
+                    <p>{specialization.data.title}</p>
+                </li>
+            ))
+        }
+    </ul>
+</Layout>
