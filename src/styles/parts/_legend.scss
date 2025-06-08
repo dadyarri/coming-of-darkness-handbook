@@ -1,0 +1,31 @@
+@use "mixins" as *;
+@use "variables" as *;
+@use "sass:map";
+
+.legend {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin: 0 calc(-8px / 2) 8px;
+    line-height: 1;
+    position: relative;
+    padding-bottom: 4px;
+    justify-content: left;
+    list-style: none;
+    padding-left: 0;
+
+    @include respond-to("md") {
+
+    }
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+
+    & p {
+        margin: 0;
+    }
+}
