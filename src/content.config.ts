@@ -4,6 +4,30 @@ import { glob } from 'astro/loaders';
 const bestiary = defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/collections/bestiary' }),
     schema: z.object({
+        title: z.string().nonempty(),
+        armorClass: z.number(),
+        type: reference("beastTypes"),
+        health: z.string().nonempty(),
+        speeds: z.array(z.object({
+            value: z.number(),
+            type: reference("speeds")
+        })),
+        resistances: z.array(reference("damageTypes")).optional(),
+        immunities: z.array(reference("damageTypes")).optional(),
+        vulnerabilities: z.array(reference("damageTypes")).optional()
+    })
+})
+
+const beastTypes = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/beastTypes' }),
+    schema: z.object({
+        title: z.string().nonempty()
+    })
+})
+
+const speeds = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/speeds' }),
+    schema: z.object({
         title: z.string().nonempty()
     })
 })
@@ -74,4 +98,4 @@ const spells = defineCollection({
     })
 })
 
-export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes };
+export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds };
