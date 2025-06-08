@@ -1,4 +1,5 @@
 {
     "title": "Защита",
-    "type": "divine"
+    "type": "divine",
+    "icon": "game-icons:shield-reflect"
 }

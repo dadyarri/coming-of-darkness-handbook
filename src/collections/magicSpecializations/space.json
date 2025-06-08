@@ -1,4 +1,5 @@
 {
     "title": "Пространство",
-    "type": "weave"
+    "type": "weave",
+    "icon": "game-icons:portal"
 }

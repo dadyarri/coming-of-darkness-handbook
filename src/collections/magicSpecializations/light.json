@@ -1,4 +1,5 @@
 {
     "title": "Свет",
-    "type": "divine"
+    "type": "divine",
+    "icon": "game-icons:sun"
 }

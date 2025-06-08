@@ -1,4 +1,5 @@
 {
     "title": "Исцеление",
-    "type": "divine"
+    "type": "divine",
+    "icon": "game-icons:healing"
 }

@@ -1,4 +1,5 @@
 {
     "title": "Иллюзии",
-    "type": "weave"
+    "type": "weave",
+    "icon": "game-icons:magick-trick"
 }

@@ -1,4 +1,5 @@
 {
     "title": "Тьма",
-    "type": "weave"
+    "type": "weave",
+    "icon": "game-icons:moon"
 }
