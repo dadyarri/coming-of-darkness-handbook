@@ -6,6 +6,7 @@ const beasts = await getCollection("bestiary");
 ---
 
 <Layout>
+    <h1>Бестиарий</h1>
     <ul>
     {beasts.map((beast) => <li>
         <a href=`/bestiary/${beast.id}`>
