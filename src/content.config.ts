@@ -25,6 +25,14 @@ const beastTypes = defineCollection({
     })
 })
 
+const components = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/components' }),
+    schema: z.object({
+        title: z.string().nonempty(),
+        short: z.string().nonempty()
+    })
+})
+
 const speeds = defineCollection({
     loader: glob({ pattern: '**/*.json', base: './src/collections/speeds' }),
     schema: z.object({
@@ -88,7 +96,7 @@ const spells = defineCollection({
     schema: z.object({
         title: z.string().nonempty(),
         castTime: reference("spellCastTimes"),
-        specialization: z.array(reference("magicSpecializations")),
+        specialization: reference("magicSpecializations"),
         rangeUnit: reference("rangeUnits"),
         rangeValue: z.number().optional(),
         durationUnit: reference("durationUnits"),
@@ -99,4 +107,4 @@ const spells = defineCollection({
     })
 })
 
-export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds };
+export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds, components };

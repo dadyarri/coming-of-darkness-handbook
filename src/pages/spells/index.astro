@@ -1,22 +1,46 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { Icon } from "astro-icon/components";
-import { getCollection } from "astro:content";
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import CardList from "@components/CardList.astro";
 
 const magicSpecializations = await getCollection("magicSpecializations");
+const spells = await getCollection("spells");
+
+// Prepare legend items
+const legend = magicSpecializations.map(spec => ({
+    icon: spec.data.icon,
+    title: spec.data.title
+}));
+
+const COMPONENT_ORDER = (await getCollection('components')).map(c => c.id).sort();
+
+// Prepare spell items
+const items = await Promise.all(spells.map(async (spell) => {
+    const specialization = await getEntry(spell.data.specialization);
+    
+    const componentShorts = await Promise.all(
+        COMPONENT_ORDER.map(async (compId) => {
+            const hasComponent = spell.data.components.some(c => c.id === compId);
+            if (!hasComponent) return '.';
+            const component = await getEntry('components', compId);
+            return component!.data.short;
+        })
+    );
+
+    return {
+        id: spell.id,
+        title: spell.data.title,
+        icon: specialization.data.icon,
+        suffix: componentShorts.join(''),
+        href: `/spells/${spell.id}`
+    };
+}));
 ---
 
 <Layout>
-    <h1>Гримуар</h1>
-
-    <ul class="legend">
-        {
-            magicSpecializations.map((specialization) => (
-                <li class="legend-item">
-                    <Icon name={specialization.data.icon} /> —
-                    <p>{specialization.data.title}</p>
-                </li>
-            ))
-        }
-    </ul>
+    <CardList 
+        title="Гримуар"
+        items={items}
+        legend={legend}
+    />
 </Layout>
