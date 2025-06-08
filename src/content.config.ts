@@ -72,6 +72,7 @@ const magicSpecializations = defineCollection({
     schema: z.object({
         title: z.string().nonempty(),
         type: reference("spellTypes"),
+        icon: z.string().nonempty()
     })
 });
 
