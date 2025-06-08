@@ -1,0 +1,86 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import RollableDice from "./RollableDice";
+
+const { beast } = Astro.props;
+
+interface Props {
+    beast: CollectionEntry<"bestiary">;
+}
+
+const speedsData = await Promise.all(
+    beast.data.speeds.map(async (speed) => {
+        const entry = await getEntry(speed.type);
+        return `${speed.value} метра ${entry.data.title}`;
+    }),
+);
+const joinedSpeeds = speedsData.join("; ");
+
+const resistancesData = beast.data.resistances
+    ? await Promise.all(
+          beast.data.resistances.map(async (resistance) => {
+              const entry = await getEntry(resistance);
+              return entry.data.title;
+          }),
+      )
+    : [];
+
+const joinedResistances = resistancesData.join(", ");
+
+// Immunities
+const immunitiesData = beast.data.immunities
+    ? await Promise.all(
+          beast.data.immunities.map(async (immunity) => {
+              const entry = await getEntry(immunity);
+              return entry.data.title;
+          }),
+      )
+    : [];
+
+const joinedImmunities = immunitiesData.join(", ");
+
+// Vulnerabilities
+const vulnerabilitiesData = beast.data.vulnerabilities
+    ? await Promise.all(
+          beast.data.vulnerabilities.map(async (vulnerability) => {
+              const entry = await getEntry(vulnerability);
+              return entry.data.title;
+          }),
+      )
+    : [];
+
+const joinedVulnerabilities = vulnerabilitiesData.join(", ");
+---
+
+<div>
+    <h1>{beast.data.title}</h1>
+    <p><b>Порог защиты:</b> {beast.data.armorClass}</p>
+    <p><b>Тип существа:</b> {(await getEntry(beast.data.type)).data.title}</p>
+    <p>
+        <b>Здоровье:</b>
+        <RollableDice formula={beast.data.health} client:load />
+    </p>
+    <p><b>Скорость:</b> {joinedSpeeds}</p>
+    {
+        joinedResistances && (
+            <p>
+                <b>Сопротивления:</b> {joinedResistances}
+            </p>
+        )
+    }
+    {
+        joinedImmunities && (
+            <p>
+                <b>Иммунитет:</b> {joinedImmunities}
+            </p>
+        )
+    }
+    {
+        joinedVulnerabilities && (
+            <p>
+                <b>Уязвимости:</b> {joinedVulnerabilities}
+            </p>
+        )
+    }
+</div>

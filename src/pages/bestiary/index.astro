@@ -1,0 +1,16 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+const beasts = await getCollection("bestiary");
+---
+
+<Layout>
+    <ul>
+    {beasts.map((beast) => <li>
+        <a href=`/bestiary/${beast.id}`>
+            {beast.data.title}
+        </a>
+    </li>)}
+    </ul>
+</Layout>

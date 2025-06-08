@@ -1,0 +1,24 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render, type CollectionEntry } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import BeastCard from "@components/BeastCard.astro";
+
+export const getStaticPaths = ( async () => {
+    const beasts = await getCollection('bestiary')
+    return beasts.map((beast) => ({
+		params: { id: beast.id },
+		props: beast
+	}))
+}) satisfies GetStaticPaths;
+
+type Props = CollectionEntry<'bestiary'>
+const beast = Astro.props
+const { Content } = await render(beast)
+---
+
+<Layout>
+    <BeastCard beast={beast} />
+    <Content/>
+</Layout>
