@@ -5,9 +5,30 @@ import { Icon } from "astro-icon/components";
 
 <header>
     <div class="main">
-        <a href="/">Calling of darkness</a>
+        <button id="menu-toggle" class="menu-toggle" aria-label="Toggle navigation">
+            <Icon name="lucide:menu" />
+        </button>
+        <a href="/" class="site-title">Calling of darkness</a>
     </div>
 </header>
+
+<script>
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.querySelector('.layout__sidebar');
+    
+    menuToggle?.addEventListener('click', () => {
+        sidebar?.classList.toggle('is-open');
+    });
+
+    // Close sidebar when clicking outside
+    document.addEventListener('click', (e) => {
+        if (sidebar?.classList.contains('is-open') && 
+            !sidebar.contains(e.target as Node) && 
+            !menuToggle?.contains(e.target as Node)) {
+            sidebar.classList.remove('is-open');
+        }
+    });
+</script>
 
 <style lang="scss">
     header {
@@ -23,13 +44,40 @@ import { Icon } from "astro-icon/components";
         & .main {
             display: flex;
             flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 12px;
+            align-items: center;
+            gap: 1rem;
             font-size: 1.5rem;
-            margin-bottom: 5px;
             font-family: var(--header-font);
+            width: 100%;
+        }
+    }
+
+    .site-title {
+        text-decoration: none;
+        color: var(--text-0);
+    }
+
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: var(--text-0);
+        cursor: pointer;
+        padding: 0.75rem;
+        border-radius: var(--border-radius);
+        margin-right: 0.5rem;
+
+        &:hover {
+            background-color: var(--bg-2);
+        }
+
+        .icon {
+            width: 2rem;
+            height: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            display: block;
         }
     }
 

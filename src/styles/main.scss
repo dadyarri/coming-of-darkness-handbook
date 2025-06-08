@@ -7,6 +7,8 @@
 @use "parts/links";
 @use "parts/aside";
 @use "parts/legend";
+@use "parts/cards";
+@use "parts/layout";
 @use "themes/dark";
 
 
@@ -69,46 +71,4 @@ html {
     margin: 0 auto;
     padding: 0 24px;
     word-wrap: break-word;
-}
-
-.layout {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-    gap: 1.5rem;
-
-    @include respond-to('lg') {
-        flex-direction: row;
-        max-width: 1200px;
-        gap: 2rem;
-    }
-
-    .content {
-        flex: 1 1 auto;
-        max-width: 100%;
-        word-wrap: break-word;
-        padding: 0 0.5rem;
-        padding-bottom: 20px;
-
-        @include respond-to('lg') {
-            max-width: 900px;
-        }
-    }
-
-    aside {
-        display: none;
-
-        @include respond-to('lg') {
-            display: block;
-            flex: 0 0 280px;
-            position: sticky;
-            top: 1.5rem;
-            align-self: flex-start;
-            max-height: calc(100vh - 3rem);
-            overflow-y: auto;
-            padding-left: 1rem;
-        }
-    }
 }
