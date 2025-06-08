@@ -51,6 +51,13 @@ const magicSpecializations = defineCollection({
     })
 });
 
+const damageTypes = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/damageTypes' }),
+    schema: z.object({
+        title: z.string().nonempty()
+    })
+})
+
 const spells = defineCollection({
     loader: glob({ pattern: '**/*.mdx', base: './src/collections/spells' }),
     schema: z.object({
@@ -67,4 +74,4 @@ const spells = defineCollection({
     })
 })
 
-export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits };
+export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes };
