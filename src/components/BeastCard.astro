@@ -1,7 +1,7 @@
 ---
 import type { CollectionEntry } from "astro:content";
 import { getEntry } from "astro:content";
-import RollableDice from "./RollableDice";
+import RollableDice from "@components/RollableDice.astro";
 
 const { beast } = Astro.props;
 
@@ -59,7 +59,7 @@ const joinedVulnerabilities = vulnerabilitiesData.join(", ");
     <p><b>Тип существа:</b> {(await getEntry(beast.data.type)).data.title}</p>
     <p>
         <b>Здоровье:</b>
-        <RollableDice formula={beast.data.health} client:load />
+        <RollableDice formula={beast.data.health} />
     </p>
     <p><b>Скорость:</b> {joinedSpeeds}</p>
     {

@@ -1,55 +1,44 @@
-@use "sass:map";
-@use "variables" as *;
+.rollableDice {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  padding: 0 4px;
+  border-bottom: 1px dashed currentColor;
 
-.rollable-dice-component-wrapper {
-    display: inline-flex;
-    vertical-align: middle;
-    margin: 0 0.2em;
-    line-height: normal;
-}
-
-.rollable-dice-button {
-    border: 1px solid var(--text-1);
-    padding: 5px;
-    border-radius: 10px;
-    background-color: var(--bg-3);
+  &__text {
     font-family: var(--code-font);
-    font-size: 12px;
-    color: var(--text-0);
-    cursor: pointer;
-    white-space: nowrap;
-    box-sizing: border-box;
-}
+  }
 
-.rollable-dice-button[disabled] {
-    background-color: var(--bg-2);
-    cursor: not-allowed;
-}
-
-.rollable-dice-tooltip {
-    position: fixed;
-    background: var(--bg-2);
-    color: var(--text-0);
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    z-index: 1000;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    opacity: 0;
-    transition: opacity 0.2s ease-out;
-}
-
-.rollable-dice-tooltip .tooltip-arrow {
+  &__tooltip {
     position: absolute;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid var(--bg-2);
-    bottom: -5px;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
-}
+    background-color: #333;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+    margin-bottom: 8px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+
+    &--visible {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+} 
