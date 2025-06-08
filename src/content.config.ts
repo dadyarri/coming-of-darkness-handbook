@@ -21,7 +21,8 @@ const bestiary = defineCollection({
 const beastTypes = defineCollection({
     loader: glob({ pattern: '**/*.json', base: './src/collections/beastTypes' }),
     schema: z.object({
-        title: z.string().nonempty()
+        title: z.string().nonempty(),
+        icon: z.string().nonempty()
     })
 })
 
