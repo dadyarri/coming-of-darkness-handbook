@@ -4,22 +4,22 @@ import { render, type CollectionEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import GenericCard from "@components/GenericCard.astro";
-import { transformBeastToCardData } from "@utils/cardTransformers";
+import { transformSpellToCardData } from "@utils/cardTransformers";
 
 export const getStaticPaths = ( async () => {
-    const beasts = await getCollection('bestiary')
-    return beasts.map((beast) => ({
-		params: { id: beast.id },
-		props: beast
+    const spells = await getCollection('spells')
+    return spells.map((spell) => ({
+		params: { id: spell.id },
+		props: spell
 	}))
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'bestiary'>
-const beast = Astro.props
-const { Content } = await render(beast)
+type Props = CollectionEntry<'spells'>
+const spell = Astro.props
+const { Content } = await render(spell)
 ---
 
 <Layout>
-    <GenericCard data={await transformBeastToCardData(beast)} />
+    <GenericCard data={await transformSpellToCardData(spell)} />
     <Content/>
 </Layout>

@@ -1,0 +1,55 @@
+---
+import type { CollectionEntry } from "astro:content";
+import { getEntry } from "astro:content";
+import RollableDice from "./RollableDice.astro";
+import type { CardData } from "@utils/types";
+import { Icon } from "astro-icon/components";
+
+interface Props {
+    data: CardData;
+}
+
+const { data } = Astro.props;
+---
+
+<div class="generic-card">
+    <div class="generic-card__header">
+        <h1 class="generic-card__title">{data.title}</h1>
+        {data.subtitle && (
+            <div class="generic-card__subtitle">
+                <Icon name={data.subtitle.icon} />
+                <span>{data.subtitle.title}</span>
+            </div>
+        )}
+    </div>
+    
+    {data.stats && data.stats.length > 0 && (
+        <div class="generic-card__stats">
+            {data.stats.map((stat) => (
+                <div class="generic-card__stat">
+                    <span class="generic-card__stat-label">{stat.label}</span>
+                    <span class="generic-card__stat-value">
+                        {stat.isRollable ? (
+                            <RollableDice formula={stat.value.toString()} />
+                        ) : (
+                            stat.value
+                        )}
+                    </span>
+                </div>
+            ))}
+        </div>
+    )}
+
+    {data.sections && data.sections.length > 0 && (
+        <div class="generic-card__sections">
+            {data.sections.map((section) => (
+                <div class="generic-card__section">
+                    <span class="generic-card__section-label">{section.title}:</span>
+                    <span class="generic-card__section-value">
+                        {section.items.join(", ")}
+                    </span>
+                </div>
+            ))}
+        </div>
+    )}
+</div> 
