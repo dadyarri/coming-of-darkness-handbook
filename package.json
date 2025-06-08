@@ -13,12 +13,8 @@
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/react": "^4.3.0",
     "@iconify-json/game-icons": "^1.2.3",
-    "@types/react": "^19.1.6",
-    "@types/react-dom": "^19.1.6",
     "astro": "^5.9.0",
     "astro-icon": "^1.1.5",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
     "sass-embedded": "^1.89.1"
   }
 }
