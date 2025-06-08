@@ -6,6 +6,7 @@
 @use "parts/dice";
 @use "parts/links";
 @use "parts/aside";
+@use "parts/legend";
 @use "themes/dark";
 
 
@@ -39,15 +40,15 @@ html {
     font-family: var(--text-font);
     line-height: 1.6em;
 
-    @include respond-to('small') {
+    @include respond-to('sm') {
         font-size: map.get($font-sizes, 'small');
     }
 
-    @include respond-to('medium') {
+    @include respond-to('md') {
         font-size: map.get($font-sizes, 'medium');
     }
 
-    @include respond-to('large') {
+    @include respond-to('lg') {
         font-size: map.get($font-sizes, 'large');
     }
 }
@@ -78,7 +79,7 @@ html {
     padding: 0 1.5rem;
     gap: 1.5rem;
 
-    @include respond-to('large') {
+    @include respond-to('lg') {
         flex-direction: row;
         max-width: 1200px;
         gap: 2rem;
@@ -89,9 +90,9 @@ html {
         max-width: 100%;
         word-wrap: break-word;
         padding: 0 0.5rem;
-        margin-bottom: 20px;
+        padding-bottom: 20px;
 
-        @include respond-to('large') {
+        @include respond-to('lg') {
             max-width: 900px;
         }
     }
@@ -99,7 +100,7 @@ html {
     aside {
         display: none;
 
-        @include respond-to('large') {
+        @include respond-to('lg') {
             display: block;
             flex: 0 0 280px;
             position: sticky;

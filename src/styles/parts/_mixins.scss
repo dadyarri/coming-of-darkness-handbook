@@ -1,12 +1,6 @@
 @use "sass:map";
 @use "sass:string";
-
-$breakpoints: (
-    'small': 640px,
-    'medium': 720px,
-    'big': 960px,
-    'large': 1200px
-);
+@use "variables" as *;
 
 // Mixins
 @mixin respond-to($breakpoint) {
@@ -14,6 +8,8 @@ $breakpoints: (
         @media (min-width: map.get($breakpoints, $breakpoint)) {
             @content;
         }
+    } @else {
+        @error "Breakpoint #{$breakpoint} is not defined";
     }
 }
 
