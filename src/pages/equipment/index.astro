@@ -1,7 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getCollection, getEntry } from "astro:content";
-import CardList from "@components/CardList.astro";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
 
 const items = await getCollection("items");
 const itemTypes = await getCollection("itemTypes");
@@ -25,7 +25,7 @@ const itemsList = await Promise.all(items.map(async (item) => {
 ---
 
 <Layout>
-    <CardList 
+    <AlphabeticalList 
         title="Снаряжение"
         items={itemsList}
         legend={legend}

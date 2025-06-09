@@ -3,7 +3,7 @@ import type { GetStaticPaths } from "astro";
 import { render, type CollectionEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import GenericCard from "@components/GenericCard.astro";
+import DetailCard from "@components/DetailCard.astro";
 
 export const getStaticPaths = (async () => {
     const guilds = await getCollection("guilds");
@@ -19,7 +19,7 @@ const { Content } = await render(guild);
 ---
 
 <Layout>
-    <GenericCard
+    <DetailCard
         data={{
             title: guild.data.title,
             subtitle: {

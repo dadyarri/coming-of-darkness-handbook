@@ -1,7 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getCollection, getEntry, type CollectionEntry } from "astro:content";
-import CardList from "@components/CardList.astro";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
 
 const magicSpecializations = await getCollection("magicSpecializations");
 const spells = await getCollection("spells");
@@ -38,7 +38,7 @@ const items = await Promise.all(spells.map(async (spell) => {
 ---
 
 <Layout>
-    <CardList 
+    <AlphabeticalList 
         title="Гримуар"
         items={items}
         legend={legend}

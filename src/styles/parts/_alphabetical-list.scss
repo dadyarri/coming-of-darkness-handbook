@@ -1,7 +1,7 @@
 @use "mixins" as *;
 @use "variables" as *;
 
-.card-list {
+.alphabetical-list {
     &__title {
         font-family: var(--header-font);
         font-size: 2rem;

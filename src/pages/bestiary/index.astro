@@ -1,7 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getCollection, getEntry } from "astro:content";
-import CardList from "@components/CardList.astro";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
 
 const beasts = await getCollection("bestiary");
 const beastTypes = await getCollection("beastTypes");
@@ -25,7 +25,7 @@ const items = await Promise.all(beasts.map(async (beast) => {
 ---
 
 <Layout>
-    <CardList 
+    <AlphabeticalList 
         title="Бестиарий"
         items={items}
         legend={legend}

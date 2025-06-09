@@ -1,7 +1,7 @@
 ---
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import CardList from "@components/CardList.astro";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
 
 const guilds = await getCollection("guilds");
 
@@ -15,7 +15,7 @@ const items = guilds.map((guild) => ({
 ---
 
 <Layout>
-    <CardList 
+    <AlphabeticalList 
         title="Гильдии"
         items={items}
     />

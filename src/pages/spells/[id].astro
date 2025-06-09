@@ -3,7 +3,7 @@ import type { GetStaticPaths } from "astro";
 import { render, type CollectionEntry } from "astro:content";
 import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
-import GenericCard from "@components/GenericCard.astro";
+import DetailCard from "@components/DetailCard.astro";
 import { transformSpellToCardData } from "@utils/cardTransformers";
 
 export const getStaticPaths = ( async () => {
@@ -20,6 +20,6 @@ const { Content } = await render(spell)
 ---
 
 <Layout>
-    <GenericCard data={await transformSpellToCardData(spell)} />
+    <DetailCard data={await transformSpellToCardData(spell)} />
     <Content/>
 </Layout>

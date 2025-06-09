@@ -32,13 +32,13 @@ const groupedItems = items.reduce((acc, item) => {
 const letters = Object.keys(groupedItems).sort();
 ---
 
-<div class="card-list">
-    <h1 class="card-list__title">{title}</h1>
+<div class="alphabetical-list">
+    <h1 class="alphabetical-list__title">{title}</h1>
 
     {legend && (
-        <ul class="card-list__legend">
+        <ul class="alphabetical-list__legend">
             {legend.map((item) => (
-                <li class="card-list__legend-item">
+                <li class="alphabetical-list__legend-item">
                     <Icon name={item.icon} />
                     <span>{item.title}</span>
                 </li>
@@ -46,20 +46,20 @@ const letters = Object.keys(groupedItems).sort();
         </ul>
     )}
 
-    <div class="card-list__content">
+    <div class="alphabetical-list__content">
         {letters.map((letter) => (
-            <div class="card-list__group">
-                <h2 class="card-list__group-label">{letter}</h2>
-                <div class="card-list__group-items">
+            <div class="alphabetical-list__group">
+                <h2 class="alphabetical-list__group-label">{letter}</h2>
+                <div class="alphabetical-list__group-items">
                     {groupedItems[letter].map((item) => (
-                        <a href={item.href} class="card-list__item">
+                        <a href={item.href} class="alphabetical-list__item">
                             {item.icon && (
-                                <span class="card-list__item-icon">
+                                <span class="alphabetical-list__item-icon">
                                     <Icon name={item.icon} />
                                 </span>
                             )}
-                            <span class="card-list__item-title">{item.title}</span>
-                            <span class="card-list__item-suffix">
+                            <span class="alphabetical-list__item-title">{item.title}</span>
+                            <span class="alphabetical-list__item-suffix">
                                 {item.suffix}
                             </span>
                         </a>
