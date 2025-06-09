@@ -1,0 +1,22 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import CardList from "@components/CardList.astro";
+
+const guilds = await getCollection("guilds");
+
+// Prepare guild items
+const items = guilds.map((guild) => ({
+    id: guild.id,
+    title: guild.data.title,
+    icon: guild.data.icon,
+    href: `/guilds/${guild.id}`
+}));
+---
+
+<Layout>
+    <CardList 
+        title="Гильдии"
+        items={items}
+    />
+</Layout> 

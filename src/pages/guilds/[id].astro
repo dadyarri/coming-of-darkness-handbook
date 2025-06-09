@@ -1,0 +1,33 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render, type CollectionEntry } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import GenericCard from "@components/GenericCard.astro";
+
+export const getStaticPaths = (async () => {
+    const guilds = await getCollection("guilds");
+    return guilds.map((guild) => ({
+        params: { id: guild.id },
+        props: guild,
+    }));
+}) satisfies GetStaticPaths;
+
+type Props = CollectionEntry<"guilds">;
+const guild = Astro.props;
+const { Content } = await render(guild);
+---
+
+<Layout>
+    <GenericCard
+        data={{
+            title: guild.data.title,
+            subtitle: {
+                title: "",
+                icon: guild.data.icon,
+            },
+        }}
+    />
+    <Content />
+</Layout>
+
