@@ -1,10 +1,22 @@
 ---
+import type { GetStaticPaths } from "astro";
 import Layout from "@layouts/Layout.astro";
-import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import { getEntry, getCollection, type CollectionEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getSpellsLegend } from "@utils/collectionUtils";
+import { getSpellsByType, getSpellsLegend } from "@utils/collectionUtils";
 
-const spells = await getCollection("spells");
+export const getStaticPaths = (async () => {
+    const specializations = await getCollection('magicSpecializations');
+    return specializations.map((spec) => ({
+        params: { type: spec.id },
+        props: spec
+    }));
+}) satisfies GetStaticPaths;
+
+type Props = CollectionEntry<'magicSpecializations'>;
+const specializationEntry = Astro.props;
+
+const spells = await getSpellsByType(specializationEntry.id);
 const legend = await getSpellsLegend();
 
 const COMPONENT_ORDER = (await getCollection('components')).map(c => c.id).sort();
@@ -34,8 +46,8 @@ const items = await Promise.all(spells.map(async (spell) => {
 
 <Layout>
     <AlphabeticalList 
-        title="Гримуар"
+        title={`Гримуар: ${specializationEntry.data.title}`}
         items={items}
         legend={legend}
     />
-</Layout>
+</Layout> 

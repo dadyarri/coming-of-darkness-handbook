@@ -13,6 +13,7 @@ interface Props {
     legend?: Array<{
         icon: string;
         title: string;
+        href: string;
     }>;
 }
 
@@ -39,8 +40,10 @@ const letters = Object.keys(groupedItems).sort();
         <ul class="alphabetical-list__legend">
             {legend.map((item) => (
                 <li class="alphabetical-list__legend-item">
-                    <Icon name={item.icon} />
-                    <span>{item.title}</span>
+                    <a href={item.href} class="alphabetical-list__legend-link">
+                        <Icon name={item.icon} />
+                        <span>{item.title}</span>
+                    </a>
                 </li>
             ))}
         </ul>

@@ -1,0 +1,41 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "@layouts/Layout.astro";
+import { getEntry, getCollection, type CollectionEntry } from "astro:content";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
+import { getBestiaryByType, getBestiaryLegend } from "@utils/collectionUtils";
+
+export const getStaticPaths = (async () => {
+    const beastTypes = await getCollection('beastTypes');
+    return beastTypes.map((type) => ({
+        params: { type: type.id },
+        props: type
+    }));
+}) satisfies GetStaticPaths;
+
+type Props = CollectionEntry<'beastTypes'>;
+const typeEntry = Astro.props;
+
+const beasts = await getBestiaryByType(typeEntry.id);
+const legend = await getBestiaryLegend();
+
+// Prepare beast items
+const items = await Promise.all(beasts.map(async (beast) => {
+    const type = await getEntry(beast.data.type);
+    return {
+        id: beast.id,
+        title: beast.data.title,
+        icon: type.data.icon,
+        href: `/bestiary/${beast.id}`
+    };
+}));
+
+---
+
+<Layout>
+    <AlphabeticalList 
+        title={`Бестиарий: ${typeEntry.data.title}`}
+        items={items}
+        legend={legend}
+    />
+</Layout> 
