@@ -96,14 +96,9 @@ export async function transformItemToCardData(item: CollectionEntry<"items">): P
             },
             {
                 label: "Стоимость",
-                value: data.cost ? `${data.cost} ${(await getEntry(data.costUnit)).data.title}` : "—"
+                value: data.price ? `${data.price} зм` : "—"
             }
         ],
-        sections: await Promise.all([
-            {
-                title: "Свойства",
-                items: data.properties ? await Promise.all(data.properties.map(prop => getEntry(prop).then(entry => entry.data.title))) : []
-            }
-        ].filter(section => section.items.length > 0))
+        sections: []
     };
 } 
