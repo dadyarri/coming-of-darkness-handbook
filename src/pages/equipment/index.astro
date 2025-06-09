@@ -1,0 +1,33 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { getCollection, getEntry } from "astro:content";
+import CardList from "@components/CardList.astro";
+
+const items = await getCollection("items");
+const itemTypes = await getCollection("itemTypes");
+
+// Prepare legend items
+const legend = itemTypes.map(type => ({
+    icon: type.data.icon,
+    title: type.data.title
+}));
+
+// Prepare item entries
+const itemsList = await Promise.all(items.map(async (item) => {
+    const type = await getEntry(item.data.type);
+    return {
+        id: item.id,
+        title: item.data.title,
+        icon: type.data.icon,
+        href: `/equipment/${item.id}`
+    };
+}));
+---
+
+<Layout>
+    <CardList 
+        title="Снаряжение"
+        items={itemsList}
+        legend={legend}
+    />
+</Layout>

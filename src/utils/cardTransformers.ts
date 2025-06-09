@@ -75,4 +75,35 @@ export async function transformSpellToCardData(spell: CollectionEntry<"spells">)
             }
         ].filter(section => section.items.length > 0))
     };
+}
+
+export async function transformItemToCardData(item: CollectionEntry<"items">): Promise<CardData> {
+    const { data } = item;
+    
+    const type = await getEntry(data.type);
+    const rarity = await getEntry(data.rarity);
+    
+    return {
+        title: data.title,
+        subtitle: {
+            icon: type.data.icon,
+            title: type.data.title
+        },
+        stats: [
+            {
+                label: "Редкость",
+                value: rarity.data.title
+            },
+            {
+                label: "Стоимость",
+                value: data.cost ? `${data.cost} ${(await getEntry(data.costUnit)).data.title}` : "—"
+            }
+        ],
+        sections: await Promise.all([
+            {
+                title: "Свойства",
+                items: data.properties ? await Promise.all(data.properties.map(prop => getEntry(prop).then(entry => entry.data.title))) : []
+            }
+        ].filter(section => section.items.length > 0))
+    };
 } 

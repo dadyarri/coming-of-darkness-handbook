@@ -1,0 +1,25 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render, type CollectionEntry } from "astro:content";
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import GenericCard from "@components/GenericCard.astro";
+import { transformItemToCardData } from "@utils/cardTransformers";
+
+export const getStaticPaths = ( async () => {
+    const items = await getCollection('items')
+    return items.map((item) => ({
+        params: { id: item.id },
+        props: item
+    }))
+}) satisfies GetStaticPaths;
+
+type Props = CollectionEntry<'items'>
+const item = Astro.props
+const { Content } = await render(item)
+---
+
+<Layout>
+    <GenericCard data={await transformItemToCardData(item)} />
+    <Content/>
+</Layout> 
