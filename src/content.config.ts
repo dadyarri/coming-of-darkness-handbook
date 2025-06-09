@@ -108,4 +108,31 @@ const spells = defineCollection({
     })
 })
 
-export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds, components };
+const items = defineCollection({
+    loader: glob({ pattern: '**/*.mdx', base: './src/collections/items' }),
+    schema: z.object({
+        title: z.string().nonempty(),
+        type: reference('itemTypes'),
+        rarity: reference('itemRarities'),
+        endurance: z.number(),
+        price: z.number()
+    })
+})
+
+const itemTypes = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/itemTypes' }),
+    schema: z.object({
+        title: z.string().nonempty(),
+        icon: z.string().nonempty()
+    })
+})
+
+const itemRarities = defineCollection({
+    loader: glob({ pattern: '**/*.json', base: './src/collections/itemRarities' }),
+    schema: z.object({
+        title: z.string().nonempty(),
+        color: z.string().nonempty()
+    })
+})
+
+export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds, components, items, itemTypes, itemRarities };
