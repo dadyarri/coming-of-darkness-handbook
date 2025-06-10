@@ -12,6 +12,7 @@
 @use "parts/detail-card";
 @use "parts/rollable-table";
 @use "parts/term";
+@use "parts/basic-table";
 @use "themes/dark";
 
 
@@ -74,4 +75,20 @@ html {
     margin: 0 auto;
     padding: 0 24px;
     word-wrap: break-word;
+}
+
+// Utility class for side-by-side tables
+.side-by-side-tables {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    @include respond-to('md') {
+        flex-direction: row;
+        
+        > table {
+            flex: 1;
+            min-width: 0; // Prevents table from overflowing
+        }
+    }
 }

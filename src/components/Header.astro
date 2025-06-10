@@ -16,7 +16,14 @@ import { Icon } from "astro-icon/components";
     const sidebar = document.querySelector('.layout__sidebar');
     
     menuToggle?.addEventListener('click', () => {
-        sidebar?.classList.toggle('is-open');
+        if (sidebar?.classList.contains('is-open')) {
+            sidebar.classList.add('is-closing');
+            sidebar.addEventListener('animationend', () => {
+                sidebar.classList.remove('is-open', 'is-closing');
+            }, { once: true });
+        } else {
+            sidebar?.classList.add('is-open');
+        }
     });
 
     // Close sidebar when clicking outside
@@ -24,7 +31,10 @@ import { Icon } from "astro-icon/components";
         if (sidebar?.classList.contains('is-open') && 
             !sidebar.contains(e.target as Node) && 
             !menuToggle?.contains(e.target as Node)) {
-            sidebar.classList.remove('is-open');
+            sidebar.classList.add('is-closing');
+            sidebar.addEventListener('animationend', () => {
+                sidebar.classList.remove('is-open', 'is-closing');
+            }, { once: true });
         }
     });
 </script>
@@ -39,6 +49,7 @@ import { Icon } from "astro-icon/components";
         max-width: 1400px;
         margin: 30px auto;
         padding: 0 24px;
+        position: relative;
 
         & .main {
             display: flex;
@@ -65,14 +76,10 @@ import { Icon } from "astro-icon/components";
         padding: 0.75rem;
         border-radius: var(--border-radius);
         margin-right: 0.5rem;
+        font-size: 25px;
 
         &:hover {
             background-color: var(--bg-2);
-        }
-
-        .icon {
-            width: 2rem;
-            height: 2rem;
         }
 
         @media (max-width: 1024px) {
