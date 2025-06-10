@@ -21,7 +21,12 @@ const items = await Promise.all(
 				const hasComponent = spell.data.components.some((c) => c.id === compId);
 				if (!hasComponent) return ".";
 				const component = await getEntry("components", compId);
-				return component!.data.short;
+
+				if (!component) {
+					return;
+				}
+
+				return component.data.short;
 			}),
 		);
 
@@ -40,6 +45,6 @@ const items = await Promise.all(
     <AlphabeticalList 
         title="Гримуар"
         items={items}
-        legend={legend}
+        legends={[legend]}
     />
 </Layout>

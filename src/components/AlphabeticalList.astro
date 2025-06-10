@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import Legend from "./Legend.astro";
 
 interface Props {
 	title: string;
@@ -7,18 +8,19 @@ interface Props {
 		id: string;
 		title: string;
 		icon?: string;
-        iconBorder?: string;
+		iconBorder?: string;
 		suffix?: string;
 		href: string;
 	}>;
-	legend?: Array<{
-		icon: string;
+	legends?: Array<Array<{
+		icon?: string;
+		color?: string;
 		title: string;
 		href: string;
-	}>;
+	}>>;
 }
 
-const { title, items, legend } = Astro.props;
+const { title, items, legends } = Astro.props;
 
 // Group items by first letter
 const groupedItems = items.reduce(
@@ -40,18 +42,9 @@ const letters = Object.keys(groupedItems).sort();
 <div class="alphabetical-list">
     <h1 class="alphabetical-list__title">{title}</h1>
 
-    {legend && (
-        <ul class="alphabetical-list__legend">
-            {legend.map((item) => (
-                <li class="alphabetical-list__legend-item">
-                    <a href={item.href} class="alphabetical-list__legend-link">
-                        <Icon name={item.icon} />
-                        <span>{item.title}</span>
-                    </a>
-                </li>
-            ))}
-        </ul>
-    )}
+    {legends && legends.map((legend) => (
+        <Legend items={legend} />
+    ))}
 
     <div class="alphabetical-list__content">
         {letters.map((letter) => (

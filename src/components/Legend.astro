@@ -1,0 +1,33 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface LegendItem {
+    icon?: string;
+    color?: string;
+    title: string;
+    href: string;
+}
+
+interface Props {
+    items: LegendItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="alphabetical-list__legend">
+    {items.map((item) => (
+        <li class="alphabetical-list__legend-item">
+            <a href={item.href} class="alphabetical-list__legend-link">
+                {item.icon && <Icon name={item.icon} />}
+                {item.color && (
+                    <span 
+                        class="detail-card__color-box" 
+                        style={`background-color: ${item.color}`}
+                    />
+                )}
+                <span>{item.title}</span>
+            </a>
+        </li>
+    ))}
+</ul> 
