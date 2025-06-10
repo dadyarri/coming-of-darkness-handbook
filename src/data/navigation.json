@@ -1,22 +1,27 @@
 [
     {
-        "label": "Гримуар",
-        "id": "spells",
-        "icon": "game-icons:spell-book"
-    },
-    {
-        "label": "Бестиарий",
-        "id": "bestiary",
-        "icon": "game-icons:beast-eye"
-    },
-    {
-        "label": "Снаряжение",
-        "id": "equipment",
-        "icon": "game-icons:crossbow"
-    },
-    {
-        "label": "Гильдии",
-        "id": "guilds",
-        "icon": "game-icons:saloon"
+        "title": "Справочники",
+        "items": [
+            {
+                "label": "Гримуар",
+                "id": "spells",
+                "icon": "game-icons:spell-book"
+            },
+            {
+                "label": "Бестиарий",
+                "id": "bestiary",
+                "icon": "game-icons:beast-eye"
+            },
+            {
+                "label": "Снаряжение",
+                "id": "equipment",
+                "icon": "game-icons:crossbow"
+            },
+            {
+                "label": "Гильдии",
+                "id": "guilds",
+                "icon": "game-icons:saloon"
+            }
+        ]
     }
 ]
