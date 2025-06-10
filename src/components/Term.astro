@@ -1,0 +1,29 @@
+---
+import { Markdown } from "@astropub/md";
+import { getCollection } from "astro:content";
+
+interface Props {
+	id: string;
+    label?: string;
+}
+
+const { id, label: overridenLabel } = Astro.props;
+
+const terms = await getCollection("terms");
+const term = terms.find((t) => t.id === id);
+
+if (!term) {
+	throw new Error(`Term with id "${id}" not found`);
+}
+
+const { label, definition } = term.data;
+---
+
+{
+    <div class="term">
+        {overridenLabel ? overridenLabel : label} <div class="term-tooltip">
+            <Markdown of={definition} />
+        </div>
+    </div>
+}
+

@@ -165,6 +165,14 @@ const mechanics = defineCollection({
 	}),
 });
 
+const terms = defineCollection({
+	loader: glob({ pattern: "**/*.json", base: "./src/collections/terms" }),
+	schema: z.object({
+		label: z.string().nonempty(),
+		definition: z.string().nonempty(),
+	}),
+});
+
 export const collections = {
 	bestiary,
 	spells,
@@ -183,4 +191,5 @@ export const collections = {
 	itemRarities,
 	guilds,
 	mechanics,
+	terms,
 };

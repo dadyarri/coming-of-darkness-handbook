@@ -1,0 +1,63 @@
+.term {
+  display: inline;
+  position: relative;
+  color: var(--accent-0);
+  cursor: help;
+  border-bottom: 1px dotted var(--accent-0);
+  transition: color 0.2s ease;
+  white-space: nowrap;
+
+  &:hover {
+
+    .term-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      color: var(--text-0);
+    }
+  }
+}
+
+.term-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  background: var(--bg-2);
+  padding: 1rem;
+  width: max-content;
+  max-width: 300px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 1000;
+  white-space: normal;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: var(--bg-2) transparent transparent transparent;
+  }
+
+  // Markdown content styling
+  & p {
+    margin: 0;
+    color: var(--text-0);
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  & ul, & ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+  }
+
+  & li {
+    margin: 0.25em 0;
+    line-height: 1.4;
+  }
+} 
