@@ -43,19 +43,24 @@ export async function getBestiaryByType(
  */
 export async function getEquipmentLegend() {
 	const itemTypes = await getCollection("itemTypes");
-	return itemTypes.map((type) => ({
-		icon: type.data.icon,
-		title: type.data.title,
-		href: `/equipment/type/${type.id}`,
-	}));
+	return itemTypes
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.map((type) => ({
+			icon: type.data.icon,
+			title: type.data.title,
+			href: `/equipment/type/${type.id}`,
+		}));
 }
+
 export async function getEquipmentRaritiesLegend() {
 	const itemRarities = await getCollection("itemRarities");
-	return itemRarities.map((rarity) => ({
-		color: rarity.data.color,
-		title: rarity.data.title,
-		href: `/equipment/rarity/${rarity.id}`,
-	}));
+	return itemRarities
+		.sort((a, b) => a.data.order - b.data.order)
+		.map((rarity) => ({
+			color: rarity.data.color,
+			title: rarity.data.title,
+			href: `/equipment/rarity/${rarity.id}`,
+		}));
 }
 
 /**
@@ -64,11 +69,13 @@ export async function getEquipmentRaritiesLegend() {
  */
 export async function getSpellsLegend() {
 	const magicSpecializations = await getCollection("magicSpecializations");
-	return magicSpecializations.map((spec) => ({
-		icon: spec.data.icon,
-		title: spec.data.title,
-		href: `/spells/type/${spec.id}`,
-	}));
+	return magicSpecializations
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.map((spec) => ({
+			icon: spec.data.icon,
+			title: spec.data.title,
+			href: `/spells/type/${spec.id}`,
+		}));
 }
 
 /**
@@ -77,9 +84,11 @@ export async function getSpellsLegend() {
  */
 export async function getBestiaryLegend() {
 	const beastTypes = await getCollection("beastTypes");
-	return beastTypes.map((type) => ({
-		icon: type.data.icon,
-		title: type.data.title,
-		href: `/bestiary/type/${type.id}`,
-	}));
+	return beastTypes
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.map((type) => ({
+			icon: type.data.icon,
+			title: type.data.title,
+			href: `/bestiary/type/${type.id}`,
+		}));
 }

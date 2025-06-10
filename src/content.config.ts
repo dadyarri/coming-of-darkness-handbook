@@ -146,6 +146,7 @@ const itemRarities = defineCollection({
 	schema: z.object({
 		title: z.string().nonempty(),
 		color: z.string().nonempty(),
+		order: z.number(),
 	}),
 });
 
