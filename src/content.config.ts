@@ -143,4 +143,11 @@ const guilds = defineCollection({
     })
 })
 
-export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds, components, items, itemTypes, itemRarities, guilds };
+const mechanics = defineCollection({
+    loader: glob({ pattern: '**/*.mdx', base: './src/collections/mechanics' }),
+    schema: z.object({
+        title: z.string().nonempty()
+    })
+})
+
+export const collections = { bestiary, spells, spellCastTimes, spellTypes, magicSpecializations, durationUnits, rangeUnits, targetUnits, damageTypes, beastTypes, speeds, components, items, itemTypes, itemRarities, guilds, mechanics };
