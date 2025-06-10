@@ -21,7 +21,7 @@ import navigation from "@data/navigation.json";
 				<nav class="nav">
 					{
 						navigation.map((section) => (
-							<>
+							<div class="nav__section">
 								<h2 class="nav__title">{section.title}</h2>
 								<ul class="nav__list">
 									{
@@ -35,7 +35,7 @@ import navigation from "@data/navigation.json";
 										))
 									}
 								</ul>
-							</>
+							</div>
 						))
 					}
 				</nav>
