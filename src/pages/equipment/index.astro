@@ -11,10 +11,13 @@ const legend = await getEquipmentLegend();
 const itemsList = await Promise.all(
 	items.map(async (item) => {
 		const type = await getEntry(item.data.type);
+		const rarity = await getEntry(item.data.rarity);
+
 		return {
 			id: item.id,
 			title: item.data.title,
 			icon: type.data.icon,
+			iconBorder: rarity.data.color,
 			href: `/equipment/${item.id}`,
 		};
 	}),

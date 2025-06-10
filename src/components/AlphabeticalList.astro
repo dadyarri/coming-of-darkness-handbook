@@ -7,6 +7,7 @@ interface Props {
 		id: string;
 		title: string;
 		icon?: string;
+        iconBorder?: string;
 		suffix?: string;
 		href: string;
 	}>;
@@ -60,7 +61,7 @@ const letters = Object.keys(groupedItems).sort();
                     {groupedItems[letter].map((item) => (
                         <a href={item.href} class="alphabetical-list__item">
                             {item.icon && (
-                                <span class="alphabetical-list__item-icon">
+                                <span class="alphabetical-list__item-icon" style={item.iconBorder ? `border: 1px solid ${item.iconBorder}` : undefined}>
                                     <Icon name={item.icon} />
                                 </span>
                             )}
