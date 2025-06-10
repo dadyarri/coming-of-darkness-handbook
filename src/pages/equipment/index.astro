@@ -2,10 +2,11 @@
 import Layout from "@layouts/Layout.astro";
 import { getCollection, getEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getEquipmentLegend } from "@utils/collectionUtils";
+import { getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
 
 const items = await getCollection("items");
 const legend = await getEquipmentLegend();
+const rarities = await getEquipmentRaritiesLegend();
 
 // Prepare item entries
 const itemsList = await Promise.all(
@@ -28,6 +29,6 @@ const itemsList = await Promise.all(
     <AlphabeticalList 
         title="Снаряжение"
         items={itemsList}
-        legends={[legend]}
+        legends={[legend, rarities]}
     />
 </Layout>

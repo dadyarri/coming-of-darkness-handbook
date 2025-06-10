@@ -49,6 +49,14 @@ export async function getEquipmentLegend() {
 		href: `/equipment/type/${type.id}`,
 	}));
 }
+export async function getEquipmentRaritiesLegend() {
+	const itemRarities = await getCollection("itemRarities");
+	return itemRarities.map((rarity) => ({
+		color: rarity.data.color,
+		title: rarity.data.title,
+		href: `/equipment/rarity/${rarity.id}`,
+	}));
+}
 
 /**
  * Gets legend items for spells

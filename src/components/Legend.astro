@@ -22,8 +22,8 @@ const { items } = Astro.props;
                 {item.icon && <Icon name={item.icon} />}
                 {item.color && (
                     <span 
-                        class="detail-card__color-box" 
-                        style={`background-color: ${item.color}`}
+                        class="alphabetical-list__color-box" 
+                        style={`background-color: ${item.color}; display: inline-block;`}
                     />
                 )}
                 <span>{item.title}</span>

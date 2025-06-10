@@ -29,6 +29,13 @@
         }
     }
 
+    &__color-box {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
     &__content {
         display: flex;
         flex-direction: column;
@@ -109,4 +116,4 @@
             font-family: var(--code-font);
         }
     }
-} 
+}
