@@ -15,6 +15,9 @@ const { data } = Astro.props;
         <h1 class="detail-card__title">{data.title}</h1>
         {data.subtitle && (
             <div class="detail-card__subtitle">
+                {data.subtitle.color && (
+                    <div class="detail-card__color-box" style={`background-color: ${data.subtitle.color}`} />
+                )}
                 <Icon name={data.subtitle.icon} />
                 <span>{data.subtitle.title}</span>
             </div>

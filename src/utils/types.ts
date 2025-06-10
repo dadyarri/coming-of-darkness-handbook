@@ -3,6 +3,7 @@ export interface CardData {
 	subtitle?: {
 		icon: string;
 		title: string;
+		color?: string;
 	};
 	stats?: Array<{
 		label: string;

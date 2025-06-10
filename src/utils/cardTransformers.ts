@@ -125,6 +125,7 @@ export async function transformItemToCardData(
 		subtitle: {
 			icon: type.data.icon,
 			title: type.data.title,
+			color: rarity.data.color
 		},
 		stats: [
 			{

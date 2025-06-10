@@ -23,6 +23,13 @@
         color: var(--text-1);
     }
 
+    &__color-box {
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 2px;
+        flex-shrink: 0;
+    }
+
     &__stats {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
