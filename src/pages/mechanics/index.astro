@@ -1,0 +1,21 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import AlphabeticalList from "@components/AlphabeticalList.astro";
+
+const mechanics = await getCollection("mechanics");
+
+// Prepare mechanics items
+const items = mechanics.map((mechanic) => ({
+    id: mechanic.id,
+    title: mechanic.data.title,
+    href: `/mechanics/${mechanic.id}`
+}));
+---
+
+<Layout>
+    <AlphabeticalList 
+        title="Игровые механики"
+        items={items}
+    />
+</Layout> 
