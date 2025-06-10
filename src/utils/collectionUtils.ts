@@ -44,7 +44,7 @@ export async function getBestiaryByType(
 export async function getEquipmentLegend() {
 	const itemTypes = await getCollection("itemTypes");
 	return itemTypes
-		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, "ru"))
 		.map((type) => ({
 			icon: type.data.icon,
 			title: type.data.title,
@@ -70,7 +70,7 @@ export async function getEquipmentRaritiesLegend() {
 export async function getSpellsLegend() {
 	const magicSpecializations = await getCollection("magicSpecializations");
 	return magicSpecializations
-		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, "ru"))
 		.map((spec) => ({
 			icon: spec.data.icon,
 			title: spec.data.title,
@@ -85,7 +85,7 @@ export async function getSpellsLegend() {
 export async function getBestiaryLegend() {
 	const beastTypes = await getCollection("beastTypes");
 	return beastTypes
-		.sort((a, b) => a.data.title.localeCompare(b.data.title, 'ru'))
+		.sort((a, b) => a.data.title.localeCompare(b.data.title, "ru"))
 		.map((type) => ({
 			icon: type.data.icon,
 			title: type.data.title,

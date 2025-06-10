@@ -2,7 +2,10 @@
 import Layout from "@layouts/Layout.astro";
 import { getCollection, getEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
+import {
+	getEquipmentLegend,
+	getEquipmentRaritiesLegend,
+} from "@utils/collectionUtils";
 
 const items = await getCollection("items");
 const legend = await getEquipmentLegend();

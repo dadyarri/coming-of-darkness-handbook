@@ -12,12 +12,14 @@ interface Props {
 		suffix?: string;
 		href: string;
 	}>;
-	legends?: Array<Array<{
-		icon?: string;
-		color?: string;
-		title: string;
-		href: string;
-	}>>;
+	legends?: Array<
+		Array<{
+			icon?: string;
+			color?: string;
+			title: string;
+			href: string;
+		}>
+	>;
 }
 
 const { title, items, legends } = Astro.props;

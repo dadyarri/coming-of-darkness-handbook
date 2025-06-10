@@ -3,7 +3,10 @@ import type { GetStaticPaths } from "astro";
 import Layout from "@layouts/Layout.astro";
 import { getEntry, getCollection, type CollectionEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
+import {
+	getEquipmentLegend,
+	getEquipmentRaritiesLegend,
+} from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
 	const itemRarities = await getCollection("itemRarities");
@@ -16,7 +19,10 @@ export const getStaticPaths = (async () => {
 type Props = CollectionEntry<"itemRarities">;
 const rarityEntry = Astro.props;
 
-const items = await getCollection("items", (item) => item.data.rarity.id === rarityEntry.id);
+const items = await getCollection(
+	"items",
+	(item) => item.data.rarity.id === rarityEntry.id,
+);
 const legend = await getEquipmentLegend();
 const rarities = await getEquipmentRaritiesLegend();
 

@@ -3,7 +3,11 @@ import type { GetStaticPaths } from "astro";
 import Layout from "@layouts/Layout.astro";
 import { getEntry, getCollection, type CollectionEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getItemsByType, getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
+import {
+	getItemsByType,
+	getEquipmentLegend,
+	getEquipmentRaritiesLegend,
+} from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
 	const itemTypes = await getCollection("itemTypes");

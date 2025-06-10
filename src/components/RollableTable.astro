@@ -1,14 +1,14 @@
 ---
 interface Props {
-  items: Array<{
-    text: string;
-    description?: string;
-  }>;
-  columnName: string;
+	items: Array<{
+		text: string;
+		description?: string;
+	}>;
+	columnName: string;
 }
 
 const { items, columnName } = Astro.props;
-const hasDescriptions = items.some(item => item.description);
+const hasDescriptions = items.some((item) => item.description);
 ---
 
 <div class="rollable-table">

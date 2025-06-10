@@ -2,14 +2,14 @@
 import { Icon } from "astro-icon/components";
 
 interface LegendItem {
-    icon?: string;
-    color?: string;
-    title: string;
-    href: string;
+	icon?: string;
+	color?: string;
+	title: string;
+	href: string;
 }
 
 interface Props {
-    items: LegendItem[];
+	items: LegendItem[];
 }
 
 const { items } = Astro.props;
