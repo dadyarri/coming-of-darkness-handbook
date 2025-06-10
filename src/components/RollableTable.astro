@@ -1,0 +1,76 @@
+---
+interface Props {
+  items: Array<{
+    text: string;
+    description?: string;
+  }>;
+  columnName: string;
+}
+
+const { items, columnName } = Astro.props;
+const hasDescriptions = items.some(item => item.description);
+---
+
+<div class="rollable-table">
+  <table class="rollable-table__table">
+    <thead class="rollable-table__header">
+      <tr>
+        <th class="rollable-table__cell rollable-table__cell--dice">d{items.length}</th>
+        <th class="rollable-table__cell">{columnName}</th>
+        {hasDescriptions && <th class="rollable-table__cell">Описание</th>}
+      </tr>
+    </thead>
+    <tbody class="rollable-table__body">
+      {items.map((item, index) => (
+        <tr class="rollable-table__row" data-index={index + 1}>
+          <td class="rollable-table__cell rollable-table__cell--number">{index + 1}</td>
+          <td class="rollable-table__cell">{item.text}</td>
+          {hasDescriptions && (
+            <td class="rollable-table__cell">{item.description || '—'}</td>
+          )}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<script>
+  class RollableTable {
+    private table: HTMLElement;
+    private diceCell: HTMLElement;
+    private rows: NodeListOf<HTMLElement>;
+
+    constructor() {
+      this.table = document.querySelector('.rollable-table')!;
+      this.diceCell = this.table.querySelector('.rollable-table__cell--dice')!;
+      this.rows = this.table.querySelectorAll('.rollable-table__row');
+      
+      this.init();
+    }
+
+    private init() {
+      this.diceCell.addEventListener('click', () => this.rollDice());
+    }
+
+    private rollDice() {
+      const max = this.rows.length;
+      const roll = Math.floor(Math.random() * max) + 1;
+      
+      // Remove highlight from all rows
+      this.rows.forEach(row => {
+        row.classList.remove('rollable-table__row--highlighted');
+      });
+
+      // Add highlight to rolled row
+      const targetRow = this.table.querySelector(`[data-index="${roll}"]`);
+      if (targetRow) {
+        targetRow.classList.add('rollable-table__row--highlighted');
+      }
+    }
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new RollableTable();
+  });
+</script> 

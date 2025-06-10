@@ -1,0 +1,57 @@
+.rollable-table {
+  width: 100%;
+  margin: 1rem 0;
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border-color);
+  }
+
+  &__header {
+    background-color: var(--bg-1);
+  }
+
+  &__cell {
+    padding: 0.75rem;
+    text-align: left;
+    border: 1px solid var(--border-color);
+    color: var(--text-0);
+
+    &--dice {
+      cursor: pointer;
+      text-align: center;
+      font-weight: bold;
+      background-color: var(--bg-1);
+      transition: background-color 0.2s ease;
+      color: var(--accent-0);
+
+      &:hover {
+        background-color: var(--bg-2);
+      }
+    }
+
+    &--number {
+      text-align: center;
+      font-weight: bold;
+      width: 3rem;
+      color: var(--text-1);
+    }
+  }
+
+  &__row {
+    transition: background-color 0.2s ease;
+
+    &--highlighted {
+      background-color: var(--bg-selection);
+      
+      .rollable-table__cell {
+        color: var(--text-0);
+      }
+    }
+
+    &:hover {
+      background-color: var(--bg-2);
+    }
+  }
+} 
