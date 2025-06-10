@@ -5,17 +5,17 @@ import Layout from "@layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import DetailCard from "@components/DetailCard.astro";
 
-export const getStaticPaths = ( async () => {
-    const mechanics = await getCollection('mechanics')
-    return mechanics.map((mechanic) => ({
+export const getStaticPaths = (async () => {
+	const mechanics = await getCollection("mechanics");
+	return mechanics.map((mechanic) => ({
 		params: { id: mechanic.id },
-		props: mechanic
-	}))
+		props: mechanic,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'mechanics'>
-const mechanic = Astro.props
-const { Content } = await render(mechanic)
+type Props = CollectionEntry<"mechanics">;
+const mechanic = Astro.props;
+const { Content } = await render(mechanic);
 ---
 
 <Layout>

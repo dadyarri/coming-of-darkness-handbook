@@ -8,15 +8,17 @@ const items = await getCollection("items");
 const legend = await getEquipmentLegend();
 
 // Prepare item entries
-const itemsList = await Promise.all(items.map(async (item) => {
-    const type = await getEntry(item.data.type);
-    return {
-        id: item.id,
-        title: item.data.title,
-        icon: type.data.icon,
-        href: `/equipment/${item.id}`
-    };
-}));
+const itemsList = await Promise.all(
+	items.map(async (item) => {
+		const type = await getEntry(item.data.type);
+		return {
+			id: item.id,
+			title: item.data.title,
+			icon: type.data.icon,
+			href: `/equipment/${item.id}`,
+		};
+	}),
+);
 ---
 
 <Layout>

@@ -6,17 +6,17 @@ import { getCollection } from "astro:content";
 import DetailCard from "@components/DetailCard.astro";
 import { transformSpellToCardData } from "@utils/cardTransformers";
 
-export const getStaticPaths = ( async () => {
-    const spells = await getCollection('spells')
-    return spells.map((spell) => ({
+export const getStaticPaths = (async () => {
+	const spells = await getCollection("spells");
+	return spells.map((spell) => ({
 		params: { id: spell.id },
-		props: spell
-	}))
+		props: spell,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'spells'>
-const spell = Astro.props
-const { Content } = await render(spell)
+type Props = CollectionEntry<"spells">;
+const spell = Astro.props;
+const { Content } = await render(spell);
 ---
 
 <Layout>

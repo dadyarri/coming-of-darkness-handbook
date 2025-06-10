@@ -6,11 +6,11 @@ import { getCollection } from "astro:content";
 import DetailCard from "@components/DetailCard.astro";
 
 export const getStaticPaths = (async () => {
-    const guilds = await getCollection("guilds");
-    return guilds.map((guild) => ({
-        params: { id: guild.id },
-        props: guild,
-    }));
+	const guilds = await getCollection("guilds");
+	return guilds.map((guild) => ({
+		params: { id: guild.id },
+		props: guild,
+	}));
 }) satisfies GetStaticPaths;
 
 type Props = CollectionEntry<"guilds">;

@@ -6,30 +6,31 @@ import AlphabeticalList from "@components/AlphabeticalList.astro";
 import { getBestiaryByType, getBestiaryLegend } from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
-    const beastTypes = await getCollection('beastTypes');
-    return beastTypes.map((type) => ({
-        params: { type: type.id },
-        props: type
-    }));
+	const beastTypes = await getCollection("beastTypes");
+	return beastTypes.map((type) => ({
+		params: { type: type.id },
+		props: type,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'beastTypes'>;
+type Props = CollectionEntry<"beastTypes">;
 const typeEntry = Astro.props;
 
 const beasts = await getBestiaryByType(typeEntry.id);
 const legend = await getBestiaryLegend();
 
 // Prepare beast items
-const items = await Promise.all(beasts.map(async (beast) => {
-    const type = await getEntry(beast.data.type);
-    return {
-        id: beast.id,
-        title: beast.data.title,
-        icon: type.data.icon,
-        href: `/bestiary/${beast.id}`
-    };
-}));
-
+const items = await Promise.all(
+	beasts.map(async (beast) => {
+		const type = await getEntry(beast.data.type);
+		return {
+			id: beast.id,
+			title: beast.data.title,
+			icon: type.data.icon,
+			href: `/bestiary/${beast.id}`,
+		};
+	}),
+);
 ---
 
 <Layout>

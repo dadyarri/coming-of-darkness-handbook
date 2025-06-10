@@ -7,10 +7,10 @@ const guilds = await getCollection("guilds");
 
 // Prepare guild items
 const items = guilds.map((guild) => ({
-    id: guild.id,
-    title: guild.data.title,
-    icon: guild.data.icon,
-    href: `/guilds/${guild.id}`
+	id: guild.id,
+	title: guild.data.title,
+	icon: guild.data.icon,
+	href: `/guilds/${guild.id}`,
 }));
 ---
 

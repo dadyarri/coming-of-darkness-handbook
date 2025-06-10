@@ -8,15 +8,17 @@ const beasts = await getCollection("bestiary");
 const legend = await getBestiaryLegend();
 
 // Prepare beast items
-const items = await Promise.all(beasts.map(async (beast) => {
-    const type = await getEntry(beast.data.type);
-    return {
-        id: beast.id,
-        title: beast.data.title,
-        icon: type.data.icon,
-        href: `/bestiary/${beast.id}`
-    };
-}));
+const items = await Promise.all(
+	beasts.map(async (beast) => {
+		const type = await getEntry(beast.data.type);
+		return {
+			id: beast.id,
+			title: beast.data.title,
+			icon: type.data.icon,
+			href: `/bestiary/${beast.id}`,
+		};
+	}),
+);
 ---
 
 <Layout>

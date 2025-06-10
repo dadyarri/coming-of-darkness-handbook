@@ -2,32 +2,35 @@
 import { Icon } from "astro-icon/components";
 
 interface Props {
-    title: string;
-    items: Array<{
-        id: string;
-        title: string;
-        icon?: string;
-        suffix?: string;
-        href: string;
-    }>;
-    legend?: Array<{
-        icon: string;
-        title: string;
-        href: string;
-    }>;
+	title: string;
+	items: Array<{
+		id: string;
+		title: string;
+		icon?: string;
+		suffix?: string;
+		href: string;
+	}>;
+	legend?: Array<{
+		icon: string;
+		title: string;
+		href: string;
+	}>;
 }
 
 const { title, items, legend } = Astro.props;
 
 // Group items by first letter
-const groupedItems = items.reduce((acc, item) => {
-    const firstLetter = item.title.charAt(0).toUpperCase();
-    if (!acc[firstLetter]) {
-        acc[firstLetter] = [];
-    }
-    acc[firstLetter].push(item);
-    return acc;
-}, {} as Record<string, typeof items>);
+const groupedItems = items.reduce(
+	(acc, item) => {
+		const firstLetter = item.title.charAt(0).toUpperCase();
+		if (!acc[firstLetter]) {
+			acc[firstLetter] = [];
+		}
+		acc[firstLetter].push(item);
+		return acc;
+	},
+	{} as Record<string, typeof items>,
+);
 
 // Sort letters
 const letters = Object.keys(groupedItems).sort();

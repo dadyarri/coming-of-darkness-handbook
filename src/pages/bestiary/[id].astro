@@ -6,17 +6,17 @@ import { getCollection } from "astro:content";
 import DetailCard from "@components/DetailCard.astro";
 import { transformBeastToCardData } from "@utils/cardTransformers";
 
-export const getStaticPaths = ( async () => {
-    const beasts = await getCollection('bestiary')
-    return beasts.map((beast) => ({
+export const getStaticPaths = (async () => {
+	const beasts = await getCollection("bestiary");
+	return beasts.map((beast) => ({
 		params: { id: beast.id },
-		props: beast
-	}))
+		props: beast,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'bestiary'>
-const beast = Astro.props
-const { Content } = await render(beast)
+type Props = CollectionEntry<"bestiary">;
+const beast = Astro.props;
+const { Content } = await render(beast);
 ---
 
 <Layout>

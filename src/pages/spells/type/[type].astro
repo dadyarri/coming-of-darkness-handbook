@@ -6,42 +6,46 @@ import AlphabeticalList from "@components/AlphabeticalList.astro";
 import { getSpellsByType, getSpellsLegend } from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
-    const specializations = await getCollection('magicSpecializations');
-    return specializations.map((spec) => ({
-        params: { type: spec.id },
-        props: spec
-    }));
+	const specializations = await getCollection("magicSpecializations");
+	return specializations.map((spec) => ({
+		params: { type: spec.id },
+		props: spec,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'magicSpecializations'>;
+type Props = CollectionEntry<"magicSpecializations">;
 const specializationEntry = Astro.props;
 
 const spells = await getSpellsByType(specializationEntry.id);
 const legend = await getSpellsLegend();
 
-const COMPONENT_ORDER = (await getCollection('components')).map(c => c.id).sort();
+const COMPONENT_ORDER = (await getCollection("components"))
+	.map((c) => c.id)
+	.sort();
 
 // Prepare spell items
-const items = await Promise.all(spells.map(async (spell) => {
-    const specialization = await getEntry(spell.data.specialization);
-    
-    const componentShorts = await Promise.all(
-        COMPONENT_ORDER.map(async (compId) => {
-            const hasComponent = spell.data.components.some(c => c.id === compId);
-            if (!hasComponent) return '.';
-            const component = await getEntry('components', compId);
-            return component!.data.short;
-        })
-    );
+const items = await Promise.all(
+	spells.map(async (spell) => {
+		const specialization = await getEntry(spell.data.specialization);
 
-    return {
-        id: spell.id,
-        title: spell.data.title,
-        icon: specialization.data.icon,
-        suffix: componentShorts.join(''),
-        href: `/spells/${spell.id}`
-    };
-}));
+		const componentShorts = await Promise.all(
+			COMPONENT_ORDER.map(async (compId) => {
+				const hasComponent = spell.data.components.some((c) => c.id === compId);
+				if (!hasComponent) return ".";
+				const component = await getEntry("components", compId);
+				return component!.data.short;
+			}),
+		);
+
+		return {
+			id: spell.id,
+			title: spell.data.title,
+			icon: specialization.data.icon,
+			suffix: componentShorts.join(""),
+			href: `/spells/${spell.id}`,
+		};
+	}),
+);
 ---
 
 <Layout>

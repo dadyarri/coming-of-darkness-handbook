@@ -6,29 +6,31 @@ import AlphabeticalList from "@components/AlphabeticalList.astro";
 import { getItemsByType, getEquipmentLegend } from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
-    const itemTypes = await getCollection('itemTypes');
-    return itemTypes.map((type) => ({
-        params: { type: type.id },
-        props: type
-    }));
+	const itemTypes = await getCollection("itemTypes");
+	return itemTypes.map((type) => ({
+		params: { type: type.id },
+		props: type,
+	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<'itemTypes'>;
+type Props = CollectionEntry<"itemTypes">;
 const typeEntry = Astro.props;
 
 const items = await getItemsByType(typeEntry.id);
 const legend = await getEquipmentLegend();
 
 // Prepare item entries
-const itemsList = await Promise.all(items.map(async (item) => {
-    const type = await getEntry(item.data.type);
-    return {
-        id: item.id,
-        title: item.data.title,
-        icon: type.data.icon,
-        href: `/equipment/${item.id}`
-    };
-}));
+const itemsList = await Promise.all(
+	items.map(async (item) => {
+		const type = await getEntry(item.data.type);
+		return {
+			id: item.id,
+			title: item.data.title,
+			icon: type.data.icon,
+			href: `/equipment/${item.id}`,
+		};
+	}),
+);
 ---
 
 <Layout>

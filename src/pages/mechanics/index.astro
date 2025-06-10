@@ -7,9 +7,9 @@ const mechanics = await getCollection("mechanics");
 
 // Prepare mechanics items
 const items = mechanics.map((mechanic) => ({
-    id: mechanic.id,
-    title: mechanic.data.title,
-    href: `/mechanics/${mechanic.id}`
+	id: mechanic.id,
+	title: mechanic.data.title,
+	href: `/mechanics/${mechanic.id}`,
 }));
 ---
 

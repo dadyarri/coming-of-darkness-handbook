@@ -1,57 +1,57 @@
 [
-    {
-        "title": "Справочники",
-        "items": [
-            {
-                "label": "Гримуар",
-                "id": "spells",
-                "icon": "game-icons:spell-book"
-            },
-            {
-                "label": "Бестиарий",
-                "id": "bestiary",
-                "icon": "game-icons:beast-eye"
-            },
-            {
-                "label": "Снаряжение",
-                "id": "equipment",
-                "icon": "game-icons:crossbow"
-            },
-            {
-                "label": "Гильдии",
-                "id": "guilds",
-                "icon": "game-icons:saloon"
-            }
-        ]
-    },
-    {
-        "title": "Статьи",
-        "items": [
-            {
-                "label": "Создание персонажа",
-                "id": "new-character",
-                "icon": "game-icons:character"
-            },
-            {
-                "label": "Игровые механики",
-                "id": "mechanics",
-                "icon": "game-icons:cog"
-            }
-        ]
-    },
-    {
-        "title": "Инструменты",
-        "items": [
-            {
-                "label": "Закуп характеристик",
-                "id": "pointbuy",
-                "icon": "game-icons:network-bars"
-            },
-            {
-                "label": "Листы персонажей",
-                "id": "characters",
-                "icon": "game-icons:human-pyramid"
-            }
-        ]
-    }
+	{
+		"title": "Справочники",
+		"items": [
+			{
+				"label": "Гримуар",
+				"id": "spells",
+				"icon": "game-icons:spell-book"
+			},
+			{
+				"label": "Бестиарий",
+				"id": "bestiary",
+				"icon": "game-icons:beast-eye"
+			},
+			{
+				"label": "Снаряжение",
+				"id": "equipment",
+				"icon": "game-icons:crossbow"
+			},
+			{
+				"label": "Гильдии",
+				"id": "guilds",
+				"icon": "game-icons:saloon"
+			}
+		]
+	},
+	{
+		"title": "Статьи",
+		"items": [
+			{
+				"label": "Создание персонажа",
+				"id": "new-character",
+				"icon": "game-icons:character"
+			},
+			{
+				"label": "Игровые механики",
+				"id": "mechanics",
+				"icon": "game-icons:cog"
+			}
+		]
+	},
+	{
+		"title": "Инструменты",
+		"items": [
+			{
+				"label": "Закуп характеристик",
+				"id": "pointbuy",
+				"icon": "game-icons:network-bars"
+			},
+			{
+				"label": "Листы персонажей",
+				"id": "characters",
+				"icon": "game-icons:human-pyramid"
+			}
+		]
+	}
 ]
