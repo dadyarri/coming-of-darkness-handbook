@@ -3,20 +3,20 @@ import type { GetStaticPaths } from "astro";
 import Layout from "@layouts/Layout.astro";
 import { getEntry, getCollection, type CollectionEntry } from "astro:content";
 import AlphabeticalList from "@components/AlphabeticalList.astro";
-import { getItemsByType, getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
+import { getEquipmentLegend, getEquipmentRaritiesLegend } from "@utils/collectionUtils";
 
 export const getStaticPaths = (async () => {
-	const itemTypes = await getCollection("itemTypes");
-	return itemTypes.map((type) => ({
-		params: { type: type.id },
-		props: type,
+	const itemRarities = await getCollection("itemRarities");
+	return itemRarities.map((rarity) => ({
+		params: { rarity: rarity.id },
+		props: rarity,
 	}));
 }) satisfies GetStaticPaths;
 
-type Props = CollectionEntry<"itemTypes">;
-const typeEntry = Astro.props;
+type Props = CollectionEntry<"itemRarities">;
+const rarityEntry = Astro.props;
 
-const items = await getItemsByType(typeEntry.id);
+const items = await getCollection("items", (item) => item.data.rarity.id === rarityEntry.id);
 const legend = await getEquipmentLegend();
 const rarities = await getEquipmentRaritiesLegend();
 
@@ -28,6 +28,7 @@ const itemsList = await Promise.all(
 			id: item.id,
 			title: item.data.title,
 			icon: type.data.icon,
+			iconBorder: rarityEntry.data.color,
 			href: `/equipment/${item.id}`,
 		};
 	}),
@@ -36,7 +37,7 @@ const itemsList = await Promise.all(
 
 <Layout>
     <AlphabeticalList 
-        title={`Снаряжение: ${typeEntry.data.title}`}
+        title={`Снаряжение: ${rarityEntry.data.title}`}
         items={itemsList}
         legends={[legend, rarities]}
     />
