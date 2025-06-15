@@ -1,0 +1,16 @@
+{
+    "minValue": 1,
+    "maxValue": 10,
+    "availablePoints": 25,
+    "prices": [
+        {"from": 1, "to": 2, "price": 1},
+        {"from": 2, "to": 3, "price": 1},
+        {"from": 3, "to": 4, "price": 2},
+        {"from": 4, "to": 5, "price": 2},
+        {"from": 5, "to": 6, "price": 3},
+        {"from": 6, "to": 7, "price": 3},
+        {"from": 7, "to": 8, "price": 4},
+        {"from": 8, "to": 9, "price": 5},
+        {"from": 9, "to": 10, "price": 6}
+    ]
+}

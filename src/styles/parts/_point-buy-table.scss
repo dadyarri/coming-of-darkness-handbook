@@ -1,0 +1,47 @@
+.point-buy-table {
+  display: grid;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem 0;
+
+  &__header {
+    display: contents;
+  }
+
+  &__row {
+    display: contents;
+  }
+
+  &__cell {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    color: var(--text-0);
+    text-align: center;
+
+    &--header {
+      background-color: var(--bg-2);
+      font-weight: bold;
+      border-bottom: 2px solid var(--border-color);
+    }
+
+    &--first-column {
+      font-weight: bold;
+      background-color: var(--bg-2);
+      border-right: 2px solid var(--border-color);
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 600px) {
+  .point-buy-table {
+    font-size: 0.9rem;
+    
+    &__cell {
+      padding: 8px;
+    }
+  }
+}

@@ -1,0 +1,203 @@
+---
+import characteristics from '../data/characteristics.json';
+
+type Props = {
+    amountOfColumns: number;
+    defaultValues?: number[];
+}
+
+const { amountOfColumns, defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue) } = Astro.props;
+
+const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
+---
+
+<div class="point-buy-table">
+    <div class="point-buy-table__header">
+        <div class="point-buy-table__cell point-buy-table__cell--header">
+            Характеристики
+        </div>
+        {characteristicsNames.map(name => (
+            <div class="point-buy-table__cell point-buy-table__cell--header">
+                {name}
+            </div>
+        ))}
+    </div>
+
+    <div class="point-buy-table__row">
+        <div class="point-buy-table__cell point-buy-table__cell--first-column">
+            Значение
+        </div>
+        {defaultValues.map((value, index) => (
+            <div class="point-buy-table__cell">
+                <div class="value-control">
+                    <button class="value-control__button" data-action="decrease" data-index={index}>-</button>
+                    <span class="value-control__value" data-index={index}>{value}</span>
+                    <button class="value-control__button" data-action="increase" data-index={index}>+</button>
+                </div>
+            </div>
+        ))}
+    </div>
+
+    <div class="point-buy-table__row">
+        <div class="point-buy-table__cell point-buy-table__cell--first-column">
+            Очки
+            <span class="available-points__current">25</span>
+            <span class="available-points__separator">/</span>
+            <span class="available-points__total">{characteristics.availablePoints}</span>
+        </div>
+        {defaultValues.map((value, index) => (
+            <div class="point-buy-table__cell">
+                <span class="points-value" data-index={index}>0</span>
+            </div>
+        ))}
+    </div>
+</div>
+
+<style lang="scss" define:vars={{ "amount-of-columns": amountOfColumns }}>
+    .point-buy-table {
+        grid-template-columns: repeat(var(--amount-of-columns), 1fr);
+    }
+
+    .value-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+
+        &__button {
+            padding: 0.25rem 0.25rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-2);
+            color: var(--text-0);
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+
+            &:hover {
+                background-color: var(--bg-3);
+            }
+
+            &:active {
+                background-color: var(--primary-color);
+            }
+
+            &:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+        }
+
+        &__value {
+            min-width: 2rem;
+            text-align: center;
+            color: var(--text-0);
+        }
+    }
+
+    .points-value {
+        color: var(--text-0);
+    }
+
+    .available-points {
+        &__current {
+            color: var(--accent-0);
+        }
+
+        &__separator {
+            color: var(--text-1);
+        }
+
+        &__total {
+            color: var(--text-1);
+        }
+    }
+</style>
+
+<script>
+    import characteristics from '../data/characteristics.json';
+
+    function calculatePoints(value: number): number {
+        let points = 0;
+        for (let i = characteristics.minValue; i < value; i++) {
+            const price = characteristics.prices.find(p => p.from === i && p.to === i + 1);
+            if (price) {
+                points += price.price;
+            }
+        }
+        return points;
+    }
+
+    function calculatePointsForValueChange(currentValue: number, isIncrease: boolean): number {
+        const newValue = isIncrease ? currentValue + 1 : currentValue - 1;
+        return calculatePoints(newValue) - calculatePoints(currentValue);
+    }
+
+    function updateAvailablePoints() {
+        const values = Array.from(document.querySelectorAll('.value-control__value')).map(el => parseInt(el.textContent || '0'));
+        const totalPoints = values.reduce((sum, value) => sum + calculatePoints(value), 0);
+        const availablePoints = characteristics.availablePoints - totalPoints;
+        
+        document.querySelector('.available-points__current')!.textContent = availablePoints.toString();
+        return availablePoints;
+    }
+
+    function updatePoints(index: number, value: number) {
+        const pointsElement = document.querySelector(`.points-value[data-index="${index}"]`);
+        if (pointsElement) {
+            pointsElement.textContent = calculatePoints(value).toString();
+        }
+    }
+
+    function updateButtonStates() {
+        const availablePoints = updateAvailablePoints();
+        const values = Array.from(document.querySelectorAll('.value-control__value'));
+        
+        values.forEach((valueElement, index) => {
+            const currentValue = parseInt(valueElement.textContent || '0');
+            const increaseButton = document.querySelector(`.value-control__button[data-action="increase"][data-index="${index}"]`) as HTMLButtonElement;
+            const decreaseButton = document.querySelector(`.value-control__button[data-action="decrease"][data-index="${index}"]`) as HTMLButtonElement;
+
+            if (increaseButton) {
+                const pointsNeeded = calculatePointsForValueChange(currentValue, true);
+                increaseButton.disabled = currentValue >= characteristics.maxValue || pointsNeeded > availablePoints;
+            }
+
+            if (decreaseButton) {
+                decreaseButton.disabled = currentValue <= characteristics.minValue;
+            }
+        });
+    }
+
+    // Initialize points and button states on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const values = Array.from(document.querySelectorAll('.value-control__value'));
+        values.forEach((valueElement, index) => {
+            const value = parseInt(valueElement.textContent || '0');
+            updatePoints(index, value);
+        });
+        updateButtonStates();
+    });
+
+    document.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains('value-control__button')) {
+            const action = target.dataset.action;
+            const index = parseInt(target.dataset.index || '0');
+            const valueElement = document.querySelector(`.value-control__value[data-index="${index}"]`);
+            
+            if (valueElement) {
+                let currentValue = parseInt(valueElement.textContent || '0');
+                
+                if (action === 'increase' && currentValue < characteristics.maxValue) {
+                    currentValue++;
+                } else if (action === 'decrease' && currentValue > characteristics.minValue) {
+                    currentValue--;
+                }
+                
+                valueElement.textContent = currentValue.toString();
+                updatePoints(index, currentValue);
+                updateButtonStates();
+            }
+        }
+    });
+</script>
