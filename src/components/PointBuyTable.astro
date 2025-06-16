@@ -275,7 +275,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 const guildBonus = parseInt(
                     this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
                 );
-                const totalValue = value + guildBonus;
+                const totalValue = Math.min(value + guildBonus, characteristics.maxValue);
                 const totalElement = this.querySelector(`.total-value[data-index="${index}"]`);
                 if (totalElement) {
                     totalElement.textContent = totalValue.toString();
@@ -299,7 +299,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 const baseValue = parseInt(
                     this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
                 );
-                const totalValue = baseValue + bonus;
+                const totalValue = Math.min(baseValue + bonus, characteristics.maxValue);
                 totalElements[index].textContent = totalValue.toString();
             });
         }
@@ -312,6 +312,9 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
             values.forEach((valueElement, index) => {
                 const currentValue = parseInt(valueElement.textContent || "0");
+                const guildBonus = parseInt(
+                    this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
+                );
                 const increaseButton = this.querySelector(
                     `.value-control__button[data-action="increase"][data-index="${index}"]`,
                 ) as HTMLButtonElement;
@@ -324,9 +327,11 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                         currentValue,
                         true,
                     );
+                    const wouldExceedMax = currentValue + 1 + guildBonus > characteristics.maxValue;
                     increaseButton.disabled =
                         currentValue >= characteristics.maxValue ||
-                        pointsNeeded > availablePoints;
+                        pointsNeeded > availablePoints ||
+                        wouldExceedMax;
                 }
 
                 if (decreaseButton) {
