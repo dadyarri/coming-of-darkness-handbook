@@ -1,14 +1,17 @@
 ---
+import { Icon } from 'astro-icon/components';
 import characteristics from '../data/characteristics.json';
 
 type Props = {
-    amountOfColumns: number;
     defaultValues?: number[];
 }
 
-const { amountOfColumns, defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue) } = Astro.props;
-
 const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
+
+const amountOfColumns = characteristicsNames.length + 1;
+
+const { defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue) } = Astro.props;
+
 ---
 
 <div class="point-buy-table">
@@ -52,6 +55,11 @@ const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
         ))}
     </div>
 </div>
+
+<button class="reset-button" id="resetButton">
+    <Icon name="game-icons:return-arrow"/>
+    Сбросить
+</button>
 
 <style lang="scss" define:vars={{ "amount-of-columns": amountOfColumns }}>
     .point-buy-table {
@@ -111,6 +119,34 @@ const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
             color: var(--text-1);
         }
     }
+
+    .reset-button {
+        padding: 0.5rem 1rem;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-2);
+        color: var(--text-0);
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+        font-family: var(--text-font);
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &__icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        &:hover {
+            background-color: var(--bg-3);
+        }
+
+        &:active {
+            background-color: var(--primary-color);
+        }
+    }
 </style>
 
 <script>
@@ -168,6 +204,15 @@ const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
         });
     }
 
+    function resetValues() {
+        const values = Array.from(document.querySelectorAll('.value-control__value'));
+        values.forEach((valueElement, index) => {
+            valueElement.textContent = characteristics.minValue.toString();
+            updatePoints(index, characteristics.minValue);
+        });
+        updateButtonStates();
+    }
+
     // Initialize points and button states on load
     document.addEventListener('DOMContentLoaded', () => {
         const values = Array.from(document.querySelectorAll('.value-control__value'));
@@ -176,6 +221,12 @@ const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
             updatePoints(index, value);
         });
         updateButtonStates();
+
+        // Add reset button handler
+        const resetButton = document.getElementById('resetButton');
+        if (resetButton) {
+            resetButton.addEventListener('click', resetValues);
+        }
     });
 
     document.addEventListener('click', (e) => {
