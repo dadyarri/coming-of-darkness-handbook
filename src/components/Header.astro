@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import AuthButton from "./AuthButton.astro";
 ---
 
 <header>
@@ -8,6 +9,9 @@ import { Icon } from "astro-icon/components";
             <Icon name="lucide:menu" />
         </button>
         <a href="/" class="site-title">Calling of darkness</a>
+        <div class="auth-container">
+            <AuthButton />
+        </div>
     </div>
 </header>
 
@@ -59,6 +63,7 @@ import { Icon } from "astro-icon/components";
             font-size: 1.5rem;
             font-family: var(--header-font);
             width: 100%;
+            justify-content: space-between;
         }
     }
 
@@ -85,6 +90,10 @@ import { Icon } from "astro-icon/components";
         @media (max-width: 1024px) {
             display: block;
         }
+    }
+
+    .auth-container {
+        margin-left: auto;
     }
 
     @media (max-width: 650px) {

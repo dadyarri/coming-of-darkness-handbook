@@ -1,0 +1,162 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div id="auth-container" class="auth-container">
+    <button id="auth-button" class="auth-button">
+        <Icon name="lucide:log-in" />
+        <span>Войти с Discord</span>
+    </button>
+    <div id="user-menu" class="user-menu hidden">
+        <div class="user-info">
+            <img id="user-avatar" class="user-avatar" src="" alt="User avatar" />
+            <span id="user-name" class="user-name"></span>
+        </div>
+        <button id="sign-out" class="sign-out">
+            <Icon name="lucide:log-out" />
+        </button>
+    </div>
+</div>
+
+<script>
+    import '../lib/supabaseClient';
+    
+    const authButton = document.getElementById('auth-button');
+    const userMenu = document.getElementById('user-menu');
+    const userAvatar = document.getElementById('user-avatar') as HTMLImageElement;
+    const userName = document.getElementById('user-name');
+    const signOutButton = document.getElementById('sign-out');
+    
+    const updateUI = (user: any) => {
+        if (user) {
+            authButton?.classList.add('hidden');
+            userMenu?.classList.remove('hidden');
+            if (user.user_metadata?.avatar_url) {
+                userAvatar.src = user.user_metadata.avatar_url;
+            }
+            userName!.textContent = user.user_metadata?.full_name || user.email || 'User';
+        } else {
+            authButton?.classList.remove('hidden');
+            userMenu?.classList.add('hidden');
+        }
+    };
+
+    // Check initial session
+    window.supabase.auth.getSession().then(({ data: { session } }) => {
+        updateUI(session?.user);
+    });
+
+    // Listen for auth changes
+    window.supabase.auth.onAuthStateChange((_event, session) => {
+        updateUI(session?.user);
+    });
+    
+    authButton?.addEventListener('click', async () => {
+        const { error } = await window.supabase.auth.signInWithOAuth({
+            provider: 'discord'
+        });
+        
+        if (error) {
+            console.error('Error:', error.message);
+        }
+    });
+
+    signOutButton?.addEventListener('click', async () => {
+        const { error } = await window.supabase.auth.signOut();
+        if (error) {
+            console.error('Error:', error.message);
+        }
+    });
+</script>
+
+<style lang="scss">
+    .auth-container {
+        position: relative;
+    }
+
+    .auth-button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-2);
+        border: none;
+        color: var(--text-0);
+        cursor: pointer;
+        padding: 0.75rem 1rem;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-family: var(--text-font);
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: var(--bg-3);
+        }
+
+        span {
+            @media (max-width: 768px) {
+                display: none;
+            }
+        }
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        background: var(--bg-2);
+        padding: 0.5rem 1rem;
+        border-radius: var(--border-radius);
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .user-name {
+        font-size: 1rem;
+        color: var(--text-0);
+        font-family: var(--text-font);
+
+        @media (max-width: 768px) {
+            display: none;
+        }
+    }
+
+    .sign-out {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        color: var(--text-0);
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        font-family: var(--text-font);
+        transition: background-color 0.2s ease;
+
+        &:hover {
+            background-color: var(--bg-3);
+        }
+
+        span {
+            @media (max-width: 768px) {
+                display: none;
+            }
+        }
+    }
+
+    .hidden {
+        display: none;
+    }
+</style> 
