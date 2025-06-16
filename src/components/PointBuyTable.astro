@@ -121,6 +121,19 @@ const guilds = await getCollection("guilds");
                 ))
             }
         </div>
+
+        <div class="point-buy-table__row">
+            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+                Итого
+            </div>
+            {
+                defaultValues.map((_, index) => (
+                    <div class="point-buy-table__cell">
+                        <span class="total-value" data-index={index}>0</span>
+                    </div>
+                ))
+            }
+        </div>
     </div>
 
     <button class="reset-button" id="resetButton">
@@ -207,14 +220,24 @@ const guilds = await getCollection("guilds");
                 `.points-value[data-index="${index}"]`,
             );
             if (pointsElement) {
-                pointsElement.textContent =
-                    this.calculatePoints(value).toString();
+                pointsElement.textContent = value.toString();
+                
+                // Update total value
+                const bonus = parseInt(
+                    this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
+                );
+                const totalValue = value + bonus;
+                const totalElement = this.querySelector(`.total-value[data-index="${index}"]`);
+                if (totalElement) {
+                    totalElement.textContent = totalValue.toString();
+                }
             }
         }
 
         private updateGuildBonuses(guildId: string): void {
             const guild = this.guilds.find((g) => g.id === guildId);
             const bonusElements = this.querySelectorAll(".guild-bonus");
+            const totalElements = this.querySelectorAll(".total-value");
 
             bonusElements.forEach((element, index) => {
                 const characteristicId = this.characteristicIds[index];
@@ -222,6 +245,13 @@ const guilds = await getCollection("guilds");
                     (b) => b.characteristic.id === characteristicId
                 )?.points || 0;
                 element.textContent = bonus > 0 ? `+${bonus}` : "0";
+
+                // Update total value
+                const baseValue = parseInt(
+                    this.querySelector(`.points-value[data-index="${index}"]`)?.textContent || "0"
+                );
+                const totalValue = baseValue + bonus;
+                totalElements[index].textContent = totalValue.toString();
             });
         }
 
