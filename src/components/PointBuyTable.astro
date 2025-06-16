@@ -15,7 +15,23 @@ const amountOfColumns = characteristicsNames.length + 1;
 const {
     defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue),
 } = Astro.props;
-const guilds = await getCollection("guilds");
+
+// Get all bonus sources from different categories with their labels
+const bonusCategories = {
+    guilds: {
+        label: "Гильдия",
+        sources: await getCollection("guilds"),
+    },
+    // Add more categories here as they become available
+    // races: {
+    //     label: "Раса",
+    //     sources: await getCollection("races"),
+    // },
+    // backgrounds: {
+    //     label: "Происхождение",
+    //     sources: await getCollection("backgrounds"),
+    // },
+};
 
 // Merge consecutive prices with the same cost
 const mergedPrices = characteristics.prices.reduce((acc, price, index, array) => {
@@ -34,7 +50,10 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 }, [] as typeof characteristics.prices);
 ---
 
-<point-buy-container data-guilds={JSON.stringify(guilds)} data-characteristic-ids={JSON.stringify(characteristicsIds)}>
+<point-buy-container 
+    data-bonus-categories={JSON.stringify(bonusCategories)} 
+    data-characteristic-ids={JSON.stringify(characteristicsIds)}
+>
     <div class="point-buy-rules">
         <details class="point-buy-rules__details">
             <summary class="point-buy-rules__summary">
@@ -67,18 +86,24 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         </details>
     </div>
 
-    <div class="guild-selector">
-        <label for="guildSelect" class="guild-selector__label">
-            Гильдия:
-        </label>
-        <select id="guildSelect" class="guild-selector__select">
-            <option value="">Без гильдии</option>
-            {
-                guilds.map((guild) => (
-                    <option value={guild.id}>{guild.data.title}</option>
-                ))
-            }
-        </select>
+    <div class="bonus-selectors">
+        {
+            Object.entries(bonusCategories).map(([category, { label, sources }]) => (
+                <div class="bonus-selector">
+                    <label for={`${category}Select`} class="bonus-selector__label">
+                        {label}:
+                    </label>
+                    <select id={`${category}Select`} class="bonus-selector__select" data-category={category}>
+                        <option value="">—</option>
+                        {
+                            sources.map((source) => (
+                                <option value={source.id}>{source.data.title}</option>
+                            ))
+                        }
+                    </select>
+                </div>
+            ))
+        }
     </div>
 
     <div class="point-buy-table">
@@ -157,12 +182,12 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             <div
                 class="point-buy-table__cell point-buy-table__cell--first-column"
             >
-                Бонусы от гильдии
+                Бонусы
             </div>
             {
                 characteristicsNames.map((_, index) => (
                     <div class="point-buy-table__cell">
-                        <span class="guild-bonus" data-index={index}>
+                        <span class="bonus-value" data-index={index}>
                             0
                         </span>
                     </div>
@@ -205,25 +230,47 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 </style>
 
 <script>
-    import type { CollectionEntry } from "astro:content";
     import characteristics from "../data/characteristics.json";
 
+    interface BonusSource {
+        id: string;
+        data: {
+            title: string;
+            bonuses: Array<{
+                characteristic: {
+                    id: string;
+                };
+                points: number;
+            }>;
+        };
+    }
+
+    interface BonusCategory {
+        label: string;
+        sources: BonusSource[];
+    }
+
+    interface BonusCategories {
+        [key: string]: BonusCategory;
+    }
+
     class PointBuyTable extends HTMLElement {
-        private guilds: CollectionEntry<"guilds">[] = [];
+        private bonusCategories: BonusCategories = {};
         private characteristicIds: string[] = [];
+        private selectedBonuses: Map<string, string> = new Map();
 
         connectedCallback() {
             this.initializePoints();
             this.setupEventListeners();
-            this.guilds = JSON.parse(this.dataset.guilds ?? "[]");
+            this.bonusCategories = JSON.parse(this.dataset.bonusCategories ?? "{}");
             this.characteristicIds = JSON.parse(this.dataset.characteristicIds ?? "[]");
             
-            // Reset guild selection on page load
-            const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
-            if (guildSelect) {
-                guildSelect.value = "";
-                this.updateGuildBonuses("");
-            }
+            // Reset all bonus selections on page load
+            const selects = this.querySelectorAll(".bonus-selector__select");
+            selects.forEach((select) => {
+                (select as HTMLSelectElement).value = "";
+            });
+            this.updateBonuses();
         }
 
         private calculatePoints(value: number): number {
@@ -270,6 +317,45 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             return availablePoints;
         }
 
+        private calculateTotalBonus(index: number, baseValue: number): { total: number; details: string[] } {
+            const characteristicId = this.characteristicIds[index];
+            let totalBonus = 0;
+            const bonusDetails: string[] = [];
+            const categoryBonuses = new Map<string, number>();
+
+            // Calculate bonus from each selected source
+            this.selectedBonuses.forEach((sourceId, category) => {
+                const categoryData = this.bonusCategories[category];
+                if (categoryData) {
+                    const source = categoryData.sources.find(s => s.id === sourceId);
+                    if (source) {
+                        const bonus = source.data.bonuses.find(
+                            b => b.characteristic.id === characteristicId
+                        )?.points || 0;
+
+                        if (bonus > 0) {
+                            const actualBonus = Math.min(
+                                bonus,
+                                characteristics.maxValue - (baseValue + totalBonus)
+                            );
+                            totalBonus += actualBonus;
+                            
+                            // Store the actual bonus for this category
+                            const currentBonus = categoryBonuses.get(categoryData.label) || 0;
+                            categoryBonuses.set(categoryData.label, currentBonus + actualBonus);
+                        }
+                    }
+                }
+            });
+
+            // Convert category bonuses to list items
+            categoryBonuses.forEach((bonus, label) => {
+                bonusDetails.push(`${label}: +${bonus}`);
+            });
+
+            return { total: totalBonus, details: bonusDetails };
+        }
+
         private updatePoints(index: number, value: number): void {
             const pointsElement = this.querySelector(
                 `.points-value[data-index="${index}"]`,
@@ -278,78 +364,37 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 const pointsSpent = this.calculatePoints(value);
                 pointsElement.textContent = pointsSpent.toString();
                 
+                // Update total value and bonus display
+                const { total: totalBonus, details: bonusDetails } = this.calculateTotalBonus(index, value);
+                const totalValue = Math.min(value + totalBonus, characteristics.maxValue);
+                
+                // Update bonus display
+                const bonusElement = this.querySelector(`.bonus-value[data-index="${index}"]`);
+                if (bonusElement) {
+                    if (bonusDetails.length > 0) {
+                        bonusElement.innerHTML = `<ul class="bonus-list">${bonusDetails.map(detail => `<li>${detail}</li>`).join('')}</ul>`;
+                    } else {
+                        bonusElement.textContent = "0";
+                    }
+                }
+
                 // Update total value
-                const guildBonus = parseInt(
-                    this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
-                );
-                const totalValue = Math.min(value + guildBonus, characteristics.maxValue);
                 const totalElement = this.querySelector(`.total-value[data-index="${index}"]`);
                 if (totalElement) {
                     totalElement.textContent = totalValue.toString();
                 }
-
-                // Update guild bonus display for this characteristic
-                const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
-                if (guildSelect && guildSelect.value) {
-                    const guild = this.guilds.find((g) => g.id === guildSelect.value);
-                    const characteristicId = this.characteristicIds[index];
-                    const fullBonus = guild?.data.bonuses.find(
-                        (b) => b.characteristic.id === characteristicId
-                    )?.points || 0;
-                    
-                    if (fullBonus > 0) {
-                        const actualBonus = Math.min(
-                            fullBonus,
-                            characteristics.maxValue - value
-                        );
-                        const bonusElement = this.querySelector(`.guild-bonus[data-index="${index}"]`);
-                        if (bonusElement) {
-                            if (actualBonus < fullBonus) {
-                                bonusElement.textContent = `+${fullBonus} (+${actualBonus})`;
-                            } else {
-                                bonusElement.textContent = `+${fullBonus}`;
-                            }
-                        }
-                    }
-                }
             }
         }
 
-        private updateGuildBonuses(guildId: string): void {
-            const guild = this.guilds.find((g) => g.id === guildId);
-            const bonusElements = this.querySelectorAll(".guild-bonus");
-            const totalElements = this.querySelectorAll(".total-value");
+        private updateBonuses(): void {
+            const values = Array.from(
+                this.querySelectorAll(".value-control__value"),
+            ).map(el => parseInt(el.textContent || "0"));
 
-            bonusElements.forEach((element, index) => {
-                const characteristicId = this.characteristicIds[index];
-                const fullBonus = guild?.data.bonuses.find(
-                    (b) => b.characteristic.id === characteristicId
-                )?.points || 0;
-                
-                // Calculate actual applied bonus
-                const baseValue = parseInt(
-                    this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
-                );
-                const actualBonus = Math.min(
-                    fullBonus,
-                    characteristics.maxValue - baseValue
-                );
-                
-                // Display both full and actual bonus if they differ
-                if (fullBonus > 0) {
-                    if (actualBonus < fullBonus) {
-                        element.textContent = `+${fullBonus} (+${actualBonus})`;
-                    } else {
-                        element.textContent = `+${fullBonus}`;
-                    }
-                } else {
-                    element.textContent = "0";
-                }
-
-                // Update total value
-                const totalValue = Math.min(baseValue + fullBonus, characteristics.maxValue);
-                totalElements[index].textContent = totalValue.toString();
+            values.forEach((value, index) => {
+                this.updatePoints(index, value);
             });
+            this.updateButtonStates();
         }
 
         private updateButtonStates(): void {
@@ -360,9 +405,8 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
             values.forEach((valueElement, index) => {
                 const currentValue = parseInt(valueElement.textContent || "0");
-                const guildBonus = parseInt(
-                    this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
-                );
+                const { total: totalBonus } = this.calculateTotalBonus(index, currentValue);
+                
                 const increaseButton = this.querySelector(
                     `.value-control__button[data-action="increase"][data-index="${index}"]`,
                 ) as HTMLButtonElement;
@@ -375,7 +419,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                         currentValue,
                         true,
                     );
-                    const wouldExceedMax = currentValue + 1 + guildBonus > characteristics.maxValue;
+                    const wouldExceedMax = currentValue + 1 + totalBonus > characteristics.maxValue;
                     increaseButton.disabled =
                         currentValue >= characteristics.maxValue ||
                         pointsNeeded > availablePoints ||
@@ -397,14 +441,14 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 valueElement.textContent = characteristics.minValue.toString();
                 this.updatePoints(index, characteristics.minValue);
             });
-            this.updateButtonStates();
             
-            // Reset guild selection
-            const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
-            if (guildSelect) {
-                guildSelect.value = "";
-                this.updateGuildBonuses("");
-            }
+            // Reset all bonus selections
+            const selects = this.querySelectorAll(".bonus-selector__select");
+            selects.forEach((select) => {
+                (select as HTMLSelectElement).value = "";
+            });
+            this.selectedBonuses.clear();
+            this.updateBonuses();
         }
 
         private initializePoints(): void {
@@ -424,15 +468,22 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 resetButton.addEventListener("click", () => this.handleResetClick());
             }
 
-            const guildSelect = this.querySelector(
-                "#guildSelect",
-            ) as HTMLSelectElement;
-            if (guildSelect) {
-                guildSelect.addEventListener("change", (e) => {
+            // Setup listeners for all bonus selectors
+            const bonusSelects = this.querySelectorAll(".bonus-selector__select");
+            bonusSelects.forEach((select) => {
+                select.addEventListener("change", (e) => {
                     const target = e.target as HTMLSelectElement;
-                    this.updateGuildBonuses(target.value);
+                    const category = target.dataset.category;
+                    if (category) {
+                        if (target.value) {
+                            this.selectedBonuses.set(category, target.value);
+                        } else {
+                            this.selectedBonuses.delete(category);
+                        }
+                        this.updateBonuses();
+                    }
                 });
-            }
+            });
 
             this.addEventListener("click", (e) => {
                 const target = e.target as HTMLElement;

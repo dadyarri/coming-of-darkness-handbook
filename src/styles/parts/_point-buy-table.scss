@@ -7,7 +7,14 @@
   margin: 1rem 0;
 }
 
-.guild-selector {
+.bonus-selectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bonus-selector {
   margin-bottom: 1rem;
   display: none;
   flex-direction: column;
@@ -51,6 +58,18 @@
       outline: none;
       border-color: var(--accent-0);
     }
+  }
+}
+
+.bonus-list {
+  list-style: none;
+  padding: 0 !important;
+  margin: 0 !important;
+  text-align: left;
+
+  li {
+      padding: 0;
+      font-size: 0.9rem;
   }
 }
 
