@@ -14,138 +14,63 @@ const { defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue
 
 ---
 
-<div class="point-buy-table">
-    <div class="point-buy-table__header">
-        <div class="point-buy-table__cell point-buy-table__cell--header">
-            Характеристики
-        </div>
-        {characteristicsNames.map(name => (
+<div class="point-buy-table-container">
+    <div class="point-buy-table">
+        <div class="point-buy-table__header">
             <div class="point-buy-table__cell point-buy-table__cell--header">
-                {name}
+                Характеристики
             </div>
-        ))}
-    </div>
-
-    <div class="point-buy-table__row">
-        <div class="point-buy-table__cell point-buy-table__cell--first-column">
-            Значение
-        </div>
-        {defaultValues.map((value, index) => (
-            <div class="point-buy-table__cell">
-                <div class="value-control">
-                    <button class="value-control__button" data-action="decrease" data-index={index}>-</button>
-                    <span class="value-control__value" data-index={index}>{value}</span>
-                    <button class="value-control__button" data-action="increase" data-index={index}>+</button>
+            {characteristicsNames.map(name => (
+                <div class="point-buy-table__cell point-buy-table__cell--header">
+                    {name}
                 </div>
+            ))}
+        </div>
+
+        <div class="point-buy-table__row">
+            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+                Значение
             </div>
-        ))}
+            {defaultValues.map((value, index) => (
+                <div class="point-buy-table__cell">
+                    <div class="value-control">
+                        <button class="value-control__button" data-action="decrease" data-index={index}>-</button>
+                        <span class="value-control__value" data-index={index}>{value}</span>
+                        <button class="value-control__button" data-action="increase" data-index={index}>+</button>
+                    </div>
+                </div>
+            ))}
+        </div>
+
+        <div class="point-buy-table__row">
+            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+                Очки
+                <span class="available-points__current">25</span>
+                <span class="available-points__separator">/</span>
+                <span class="available-points__total">{characteristics.availablePoints}</span>
+            </div>
+            {defaultValues.map((value, index) => (
+                <div class="point-buy-table__cell">
+                    <span class="points-value" data-index={index}>0</span>
+                </div>
+            ))}
+        </div>
     </div>
 
-    <div class="point-buy-table__row">
-        <div class="point-buy-table__cell point-buy-table__cell--first-column">
-            Очки
-            <span class="available-points__current">25</span>
-            <span class="available-points__separator">/</span>
-            <span class="available-points__total">{characteristics.availablePoints}</span>
-        </div>
-        {defaultValues.map((value, index) => (
-            <div class="point-buy-table__cell">
-                <span class="points-value" data-index={index}>0</span>
-            </div>
-        ))}
+    <button class="reset-button" id="resetButton">
+        <Icon name="game-icons:return-arrow"/>
+        Сбросить
+    </button>
+
+    <div class="mobile-placeholder">
+        <Icon name="game-icons:smartphone" class="mobile-placeholder__icon"/>
+        <p class="mobile-placeholder__text">Для работы с таблицей характеристик используйте устройство с большим экраном</p>
     </div>
 </div>
-
-<button class="reset-button" id="resetButton">
-    <Icon name="game-icons:return-arrow"/>
-    Сбросить
-</button>
 
 <style lang="scss" define:vars={{ "amount-of-columns": amountOfColumns }}>
     .point-buy-table {
         grid-template-columns: repeat(var(--amount-of-columns), 1fr);
-    }
-
-    .value-control {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-
-        &__button {
-            padding: 0.25rem 0.25rem;
-            border: 1px solid var(--border-color);
-            background-color: var(--bg-2);
-            color: var(--text-0);
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.2s ease;
-
-            &:hover {
-                background-color: var(--bg-3);
-            }
-
-            &:active {
-                background-color: var(--primary-color);
-            }
-
-            &:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-        }
-
-        &__value {
-            min-width: 2rem;
-            text-align: center;
-            color: var(--text-0);
-        }
-    }
-
-    .points-value {
-        color: var(--text-0);
-    }
-
-    .available-points {
-        &__current {
-            color: var(--accent-0);
-        }
-
-        &__separator {
-            color: var(--text-1);
-        }
-
-        &__total {
-            color: var(--text-1);
-        }
-    }
-
-    .reset-button {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border-color);
-        background-color: var(--bg-2);
-        color: var(--text-0);
-        cursor: pointer;
-        border-radius: 4px;
-        transition: background-color 0.2s ease;
-        font-family: var(--text-font);
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        &__icon {
-            width: 16px;
-            height: 16px;
-        }
-
-        &:hover {
-            background-color: var(--bg-3);
-        }
-
-        &:active {
-            background-color: var(--primary-color);
-        }
     }
 </style>
 

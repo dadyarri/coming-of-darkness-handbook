@@ -1,5 +1,14 @@
+@use "mixins" as *;
+
+.point-buy-table-container {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem 0;
+}
+
 .point-buy-table {
-  display: grid;
+  display: none;
   border: 1px solid var(--border-color);
   border-radius: 4px;
   overflow: hidden;
@@ -35,13 +44,109 @@
   }
 }
 
-// Responsive adjustments
-@media (max-width: 600px) {
+.value-control {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  &__button {
+      padding: 0.25rem 0.25rem;
+      border: 1px solid var(--border-color);
+      background-color: var(--bg-2);
+      color: var(--text-0);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+          background-color: var(--bg-3);
+      }
+
+      &:active {
+          background-color: var(--primary-color);
+      }
+
+      &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+      }
+  }
+
+  &__value {
+      min-width: 2rem;
+      text-align: center;
+      color: var(--text-0);
+  }
+}
+
+.mobile-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-1);
+  gap: 1rem;
+
+  &__icon {
+    width: 48px;
+    height: 48px;
+    color: var(--text-1);
+  }
+
+  &__text {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+}
+
+.reset-button {
+  display: none !important;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-2);
+  color: var(--text-0);
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  font-family: var(--text-font);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background-color: var(--bg-3);
+  }
+
+  &:active {
+    background-color: var(--primary-color);
+  }
+}
+
+@include respond-to('md') {
   .point-buy-table {
-    font-size: 0.9rem;
-    
     &__cell {
-      padding: 8px;
+      padding: 12px;
     }
+  }
+
+  .mobile-placeholder {
+    display: none;
+  }
+
+  .point-buy-table {
+    display: grid;
+  }
+  .reset-button {
+    display: flex;
   }
 }
