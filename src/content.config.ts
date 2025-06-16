@@ -155,6 +155,10 @@ const guilds = defineCollection({
 	schema: z.object({
 		title: z.string().nonempty(),
 		icon: z.string().nonempty(),
+		bonuses: z.array(z.object({
+			characteristic: reference('characteristics'),
+			points: z.number()
+		}))
 	}),
 });
 

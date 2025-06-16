@@ -7,6 +7,53 @@
   margin: 1rem 0;
 }
 
+.guild-selector {
+  margin-bottom: 1rem;
+  display: none;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  @include respond-to('md') {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &__label {
+    color: var(--text-0);
+    font-weight: bold;
+    font-family: var(--text-font);
+    font-size: 1.1rem;
+  }
+
+  &__select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-2);
+    color: var(--text-0);
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: var(--text-font);
+    font-size: 1.1rem;
+    min-width: 250px;
+
+    & option {
+      font-family: var(--text-font);
+      font-size: 1.1rem;
+      padding: 0.5rem;
+    }
+
+    &:hover {
+      background-color: var(--bg-3);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-0);
+    }
+  }
+}
+
 .point-buy-table {
   display: none;
   border: 1px solid var(--border-color);
@@ -51,32 +98,32 @@
   gap: 0.5rem;
 
   &__button {
-      padding: 0.25rem 0.25rem;
-      border: 1px solid var(--border-color);
-      background-color: var(--bg-2);
-      color: var(--text-0);
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.2s ease;
+    padding: 0.25rem 0.25rem;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-2);
+    color: var(--text-0);
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
 
-      &:hover {
-          background-color: var(--bg-3);
-      }
+    &:hover {
+      background-color: var(--bg-3);
+    }
 
-      &:active {
-          background-color: var(--primary-color);
-      }
+    &:active {
+      background-color: var(--primary-color);
+    }
 
-      &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-      }
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
   }
 
   &__value {
-      min-width: 2rem;
-      text-align: center;
-      color: var(--text-0);
+    min-width: 2rem;
+    text-align: center;
+    color: var(--text-0);
   }
 }
 
@@ -146,6 +193,7 @@
   .point-buy-table {
     display: grid;
   }
+
   .reset-button {
     display: flex !important;
   }

@@ -1,74 +1,141 @@
 ---
-import { Icon } from 'astro-icon/components';
-import characteristics from '../data/characteristics.json';
-import { getCollection } from 'astro:content';
+import { Icon } from "astro-icon/components";
+import characteristics from "../data/characteristics.json";
+import { getCollection } from "astro:content";
 
 type Props = {
     defaultValues?: number[];
-}
+};
 
-const characteristicsNames = (await getCollection('characteristics'))
-    .map(i => i.data.short);
+const characteristicsCollection = await getCollection("characteristics");
+const characteristicsNames = characteristicsCollection.map((i) => i.data.short);
+const characteristicsIds = characteristicsCollection.map((i) => i.id);
 
 const amountOfColumns = characteristicsNames.length + 1;
-
-const { defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue) } = Astro.props;
-
+const {
+    defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue),
+} = Astro.props;
+const guilds = await getCollection("guilds");
 ---
 
-<div class="point-buy-table-container">
+<point-buy-container data-guilds={JSON.stringify(guilds)} data-characteristic-ids={JSON.stringify(characteristicsIds)}>
+    <div class="guild-selector">
+        <label for="guildSelect" class="guild-selector__label">
+            Гильдия:
+        </label>
+        <select id="guildSelect" class="guild-selector__select">
+            <option value="">Без гильдии</option>
+            {
+                guilds.map((guild) => (
+                    <option value={guild.id}>{guild.data.title}</option>
+                ))
+            }
+        </select>
+    </div>
+
     <div class="point-buy-table">
         <div class="point-buy-table__header">
             <div class="point-buy-table__cell point-buy-table__cell--header">
                 Характеристики
             </div>
-            {characteristicsNames.map(name => (
-                <div class="point-buy-table__cell point-buy-table__cell--header">
-                    {name}
-                </div>
-            ))}
+            {
+                characteristicsNames.map((name) => (
+                    <div class="point-buy-table__cell point-buy-table__cell--header">
+                        {name}
+                    </div>
+                ))
+            }
         </div>
 
         <div class="point-buy-table__row">
-            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+            <div
+                class="point-buy-table__cell point-buy-table__cell--first-column"
+            >
                 Значение
             </div>
-            {defaultValues.map((value, index) => (
-                <div class="point-buy-table__cell">
-                    <div class="value-control">
-                        <button class="value-control__button" data-action="decrease" data-index={index}>-</button>
-                        <span class="value-control__value" data-index={index}>{value}</span>
-                        <button class="value-control__button" data-action="increase" data-index={index}>+</button>
+            {
+                defaultValues.map((value, index) => (
+                    <div class="point-buy-table__cell">
+                        <div class="value-control">
+                            <button
+                                class="value-control__button"
+                                data-action="decrease"
+                                data-index={index}
+                            >
+                                -
+                            </button>
+                            <span
+                                class="value-control__value"
+                                data-index={index}
+                            >
+                                {value}
+                            </span>
+                            <button
+                                class="value-control__button"
+                                data-action="increase"
+                                data-index={index}
+                            >
+                                +
+                            </button>
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))
+            }
         </div>
 
         <div class="point-buy-table__row">
-            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+            <div
+                class="point-buy-table__cell point-buy-table__cell--first-column"
+            >
                 Очки
                 <span class="available-points__current">25</span>
                 <span class="available-points__separator">/</span>
-                <span class="available-points__total">{characteristics.availablePoints}</span>
+                <span class="available-points__total"
+                    >{characteristics.availablePoints}</span
+                >
             </div>
-            {defaultValues.map((value, index) => (
-                <div class="point-buy-table__cell">
-                    <span class="points-value" data-index={index}>0</span>
-                </div>
-            ))}
+            {
+                defaultValues.map((_, index) => (
+                    <div class="point-buy-table__cell">
+                        <span class="points-value" data-index={index}>
+                            0
+                        </span>
+                    </div>
+                ))
+            }
+        </div>
+
+        <div class="point-buy-table__row">
+            <div
+                class="point-buy-table__cell point-buy-table__cell--first-column"
+            >
+                Бонусы от гильдии
+            </div>
+            {
+                characteristicsNames.map((_, index) => (
+                    <div class="point-buy-table__cell">
+                        <span class="guild-bonus" data-index={index}>
+                            0
+                        </span>
+                    </div>
+                ))
+            }
         </div>
     </div>
 
     <button class="reset-button" id="resetButton">
-        <Icon name="game-icons:return-arrow"/>
+        <Icon name="game-icons:return-arrow" />
         Сбросить
     </button>
 
     <div class="mobile-placeholder">
-        <Icon name="game-icons:smartphone" class="mobile-placeholder__icon"/>
-        <p class="mobile-placeholder__text">Для работы с таблицей характеристик используйте устройство с большим экраном</p>
+        <Icon name="game-icons:smartphone" class="mobile-placeholder__icon" />
+        <p class="mobile-placeholder__text">
+            Для работы с таблицей характеристик используйте устройство с большим
+            экраном
+        </p>
     </div>
-</div>
+</point-buy-container>
 
 <style lang="scss" define:vars={{ "amount-of-columns": amountOfColumns }}>
     .point-buy-table {
@@ -77,105 +144,196 @@ const { defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue
 </style>
 
 <script>
-    import characteristics from '../data/characteristics.json';
+    import type { CollectionEntry } from "astro:content";
+    import characteristics from "../data/characteristics.json";
 
-    function calculatePoints(value: number): number {
-        let points = 0;
-        for (let i = characteristics.minValue; i < value; i++) {
-            const price = characteristics.prices.find(p => p.from === i && p.to === i + 1);
-            if (price) {
-                points += price.price;
-            }
+    class PointBuyTable extends HTMLElement {
+        private guilds: CollectionEntry<"guilds">[] = [];
+        private characteristicIds: string[] = [];
+
+        connectedCallback() {
+            this.initializePoints();
+            this.setupEventListeners();
+            this.guilds = JSON.parse(this.dataset.guilds ?? "[]");
+            this.characteristicIds = JSON.parse(this.dataset.characteristicIds ?? "[]");
         }
-        return points;
-    }
 
-    function calculatePointsForValueChange(currentValue: number, isIncrease: boolean): number {
-        const newValue = isIncrease ? currentValue + 1 : currentValue - 1;
-        return calculatePoints(newValue) - calculatePoints(currentValue);
-    }
-
-    function updateAvailablePoints() {
-        const values = Array.from(document.querySelectorAll('.value-control__value')).map(el => parseInt(el.textContent || '0'));
-        const totalPoints = values.reduce((sum, value) => sum + calculatePoints(value), 0);
-        const availablePoints = characteristics.availablePoints - totalPoints;
-        
-        document.querySelector('.available-points__current')!.textContent = availablePoints.toString();
-        return availablePoints;
-    }
-
-    function updatePoints(index: number, value: number) {
-        const pointsElement = document.querySelector(`.points-value[data-index="${index}"]`);
-        if (pointsElement) {
-            pointsElement.textContent = calculatePoints(value).toString();
-        }
-    }
-
-    function updateButtonStates() {
-        const availablePoints = updateAvailablePoints();
-        const values = Array.from(document.querySelectorAll('.value-control__value'));
-        
-        values.forEach((valueElement, index) => {
-            const currentValue = parseInt(valueElement.textContent || '0');
-            const increaseButton = document.querySelector(`.value-control__button[data-action="increase"][data-index="${index}"]`) as HTMLButtonElement;
-            const decreaseButton = document.querySelector(`.value-control__button[data-action="decrease"][data-index="${index}"]`) as HTMLButtonElement;
-
-            if (increaseButton) {
-                const pointsNeeded = calculatePointsForValueChange(currentValue, true);
-                increaseButton.disabled = currentValue >= characteristics.maxValue || pointsNeeded > availablePoints;
-            }
-
-            if (decreaseButton) {
-                decreaseButton.disabled = currentValue <= characteristics.minValue;
-            }
-        });
-    }
-
-    function resetValues() {
-        const values = Array.from(document.querySelectorAll('.value-control__value'));
-        values.forEach((valueElement, index) => {
-            valueElement.textContent = characteristics.minValue.toString();
-            updatePoints(index, characteristics.minValue);
-        });
-        updateButtonStates();
-    }
-
-    // Initialize points and button states on load
-    document.addEventListener('DOMContentLoaded', () => {
-        const values = Array.from(document.querySelectorAll('.value-control__value'));
-        values.forEach((valueElement, index) => {
-            const value = parseInt(valueElement.textContent || '0');
-            updatePoints(index, value);
-        });
-        updateButtonStates();
-
-        // Add reset button handler
-        const resetButton = document.getElementById('resetButton');
-        if (resetButton) {
-            resetButton.addEventListener('click', resetValues);
-        }
-    });
-
-    document.addEventListener('click', (e) => {
-        const target = e.target as HTMLElement;
-        if (target.classList.contains('value-control__button')) {
-            const action = target.dataset.action;
-            const index = parseInt(target.dataset.index || '0');
-            const valueElement = document.querySelector(`.value-control__value[data-index="${index}"]`);
-            
-            if (valueElement) {
-                let currentValue = parseInt(valueElement.textContent || '0');
-                
-                if (action === 'increase' && currentValue < characteristics.maxValue) {
-                    currentValue++;
-                } else if (action === 'decrease' && currentValue > characteristics.minValue) {
-                    currentValue--;
+        private calculatePoints(value: number): number {
+            let points = 0;
+            for (let i = characteristics.minValue; i < value; i++) {
+                const price = characteristics.prices.find(
+                    (p) => p.from === i && p.to === i + 1,
+                );
+                if (price) {
+                    points += price.price;
                 }
-                
-                valueElement.textContent = currentValue.toString();
-                updatePoints(index, currentValue);
-                updateButtonStates();
+            }
+            return points;
+        }
+
+        private calculatePointsForValueChange(
+            currentValue: number,
+            isIncrease: boolean,
+        ): number {
+            const newValue = isIncrease ? currentValue + 1 : currentValue - 1;
+            return (
+                this.calculatePoints(newValue) -
+                this.calculatePoints(currentValue)
+            );
+        }
+
+        private updateAvailablePoints(): number {
+            const values = Array.from(
+                this.querySelectorAll(".value-control__value"),
+            ).map((el) => parseInt(el.textContent || "0"));
+            const totalPoints = values.reduce(
+                (sum, value) => sum + this.calculatePoints(value),
+                0,
+            );
+            const availablePoints =
+                characteristics.availablePoints - totalPoints;
+
+            const currentElement = this.querySelector(
+                ".available-points__current",
+            );
+            if (currentElement) {
+                currentElement.textContent = availablePoints.toString();
+            }
+            return availablePoints;
+        }
+
+        private updatePoints(index: number, value: number): void {
+            const pointsElement = this.querySelector(
+                `.points-value[data-index="${index}"]`,
+            );
+            if (pointsElement) {
+                pointsElement.textContent =
+                    this.calculatePoints(value).toString();
             }
         }
-    });
+
+        private updateGuildBonuses(guildId: string): void {
+            const guild = this.guilds.find((g) => g.id === guildId);
+            const bonusElements = this.querySelectorAll(".guild-bonus");
+
+            bonusElements.forEach((element, index) => {
+                const characteristicId = this.characteristicIds[index];
+                const bonus = guild?.data.bonuses.find(
+                    (b) => b.characteristic.id === characteristicId
+                )?.points || 0;
+                element.textContent = bonus > 0 ? `+${bonus}` : "0";
+            });
+        }
+
+        private updateButtonStates(): void {
+            const availablePoints = this.updateAvailablePoints();
+            const values = Array.from(
+                this.querySelectorAll(".value-control__value"),
+            );
+
+            values.forEach((valueElement, index) => {
+                const currentValue = parseInt(valueElement.textContent || "0");
+                const increaseButton = this.querySelector(
+                    `.value-control__button[data-action="increase"][data-index="${index}"]`,
+                ) as HTMLButtonElement;
+                const decreaseButton = this.querySelector(
+                    `.value-control__button[data-action="decrease"][data-index="${index}"]`,
+                ) as HTMLButtonElement;
+
+                if (increaseButton) {
+                    const pointsNeeded = this.calculatePointsForValueChange(
+                        currentValue,
+                        true,
+                    );
+                    increaseButton.disabled =
+                        currentValue >= characteristics.maxValue ||
+                        pointsNeeded > availablePoints;
+                }
+
+                if (decreaseButton) {
+                    decreaseButton.disabled =
+                        currentValue <= characteristics.minValue;
+                }
+            });
+        }
+
+        private handleResetClick(): void {
+            const values = Array.from(
+                this.querySelectorAll(".value-control__value"),
+            );
+            values.forEach((valueElement, index) => {
+                valueElement.textContent = characteristics.minValue.toString();
+                this.updatePoints(index, characteristics.minValue);
+            });
+            this.updateButtonStates();
+            this.updateGuildBonuses(""); // Reset guild bonuses
+            const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
+            if (guildSelect) {
+                guildSelect.value = ""; // Reset guild selection
+            }
+        }
+
+        private initializePoints(): void {
+            const values = Array.from(
+                this.querySelectorAll(".value-control__value"),
+            );
+            values.forEach((valueElement, index) => {
+                const value = parseInt(valueElement.textContent || "0");
+                this.updatePoints(index, value);
+            });
+            this.updateButtonStates();
+        }
+
+        private setupEventListeners(): void {
+            const resetButton = this.querySelector("#resetButton");
+            if (resetButton) {
+                resetButton.addEventListener("click", () => this.handleResetClick());
+            }
+
+            const guildSelect = this.querySelector(
+                "#guildSelect",
+            ) as HTMLSelectElement;
+            if (guildSelect) {
+                guildSelect.addEventListener("change", (e) => {
+                    const target = e.target as HTMLSelectElement;
+                    this.updateGuildBonuses(target.value);
+                });
+            }
+
+            this.addEventListener("click", (e) => {
+                const target = e.target as HTMLElement;
+                if (target.classList.contains("value-control__button")) {
+                    const action = target.dataset.action;
+                    const index = parseInt(target.dataset.index || "0");
+                    const valueElement = this.querySelector(
+                        `.value-control__value[data-index="${index}"]`,
+                    );
+
+                    if (valueElement) {
+                        let currentValue = parseInt(
+                            valueElement.textContent || "0",
+                        );
+
+                        if (
+                            action === "increase" &&
+                            currentValue < characteristics.maxValue
+                        ) {
+                            currentValue++;
+                        } else if (
+                            action === "decrease" &&
+                            currentValue > characteristics.minValue
+                        ) {
+                            currentValue--;
+                        }
+
+                        valueElement.textContent = currentValue.toString();
+                        this.updatePoints(index, currentValue);
+                        this.updateButtonStates();
+                    }
+                }
+            });
+        }
+    }
+
+    customElements.define("point-buy-container", PointBuyTable);
 </script>
