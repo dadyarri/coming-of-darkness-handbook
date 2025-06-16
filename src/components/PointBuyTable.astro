@@ -287,6 +287,31 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 if (totalElement) {
                     totalElement.textContent = totalValue.toString();
                 }
+
+                // Update guild bonus display for this characteristic
+                const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
+                if (guildSelect && guildSelect.value) {
+                    const guild = this.guilds.find((g) => g.id === guildSelect.value);
+                    const characteristicId = this.characteristicIds[index];
+                    const fullBonus = guild?.data.bonuses.find(
+                        (b) => b.characteristic.id === characteristicId
+                    )?.points || 0;
+                    
+                    if (fullBonus > 0) {
+                        const actualBonus = Math.min(
+                            fullBonus,
+                            characteristics.maxValue - value
+                        );
+                        const bonusElement = this.querySelector(`.guild-bonus[data-index="${index}"]`);
+                        if (bonusElement) {
+                            if (actualBonus < fullBonus) {
+                                bonusElement.textContent = `+${fullBonus} (+${actualBonus})`;
+                            } else {
+                                bonusElement.textContent = `+${fullBonus}`;
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -297,16 +322,32 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
             bonusElements.forEach((element, index) => {
                 const characteristicId = this.characteristicIds[index];
-                const bonus = guild?.data.bonuses.find(
+                const fullBonus = guild?.data.bonuses.find(
                     (b) => b.characteristic.id === characteristicId
                 )?.points || 0;
-                element.textContent = bonus > 0 ? `+${bonus}` : "0";
-
-                // Update total value
+                
+                // Calculate actual applied bonus
                 const baseValue = parseInt(
                     this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
                 );
-                const totalValue = Math.min(baseValue + bonus, characteristics.maxValue);
+                const actualBonus = Math.min(
+                    fullBonus,
+                    characteristics.maxValue - baseValue
+                );
+                
+                // Display both full and actual bonus if they differ
+                if (fullBonus > 0) {
+                    if (actualBonus < fullBonus) {
+                        element.textContent = `+${fullBonus} (+${actualBonus})`;
+                    } else {
+                        element.textContent = `+${fullBonus}`;
+                    }
+                } else {
+                    element.textContent = "0";
+                }
+
+                // Update total value
+                const totalValue = Math.min(baseValue + fullBonus, characteristics.maxValue);
                 totalElements[index].textContent = totalValue.toString();
             });
         }
