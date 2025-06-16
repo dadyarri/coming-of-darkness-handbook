@@ -272,10 +272,10 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 pointsElement.textContent = pointsSpent.toString();
                 
                 // Update total value
-                const bonus = parseInt(
+                const guildBonus = parseInt(
                     this.querySelector(`.guild-bonus[data-index="${index}"]`)?.textContent || "0"
                 );
-                const totalValue = value + bonus;
+                const totalValue = value + guildBonus;
                 const totalElement = this.querySelector(`.total-value[data-index="${index}"]`);
                 if (totalElement) {
                     totalElement.textContent = totalValue.toString();
@@ -297,7 +297,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
                 // Update total value
                 const baseValue = parseInt(
-                    this.querySelector(`.points-value[data-index="${index}"]`)?.textContent || "0"
+                    this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
                 );
                 const totalValue = baseValue + bonus;
                 totalElements[index].textContent = totalValue.toString();
