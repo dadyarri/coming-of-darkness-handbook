@@ -8,29 +8,29 @@
 }
 
 .bonus-selectors {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
+  max-width: 800px;
+
+  @include respond-to('md') {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .bonus-selector {
-  margin-bottom: 1rem;
-  display: none;
-  flex-direction: column;
-  gap: 0.5rem;
-
-  @include respond-to('md') {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  gap: 1rem;
+  align-items: center;
 
   &__label {
     color: var(--text-0);
     font-weight: bold;
     font-family: var(--text-font);
     font-size: 1.1rem;
+    white-space: nowrap;
   }
 
   &__select {
@@ -42,7 +42,7 @@
     cursor: pointer;
     font-family: var(--text-font);
     font-size: 1.1rem;
-    min-width: 250px;
+    width: 100%;
 
     & option {
       font-family: var(--text-font);
@@ -95,6 +95,7 @@
     border: 1px solid var(--border-color);
     color: var(--text-0);
     text-align: center;
+    white-space: nowrap;
 
     &--header {
       background-color: var(--bg-2);
