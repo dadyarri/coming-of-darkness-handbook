@@ -220,7 +220,8 @@ const guilds = await getCollection("guilds");
                 `.points-value[data-index="${index}"]`,
             );
             if (pointsElement) {
-                pointsElement.textContent = value.toString();
+                const pointsSpent = this.calculatePoints(value);
+                pointsElement.textContent = pointsSpent.toString();
                 
                 // Update total value
                 const bonus = parseInt(
