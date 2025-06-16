@@ -217,6 +217,13 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             this.setupEventListeners();
             this.guilds = JSON.parse(this.dataset.guilds ?? "[]");
             this.characteristicIds = JSON.parse(this.dataset.characteristicIds ?? "[]");
+            
+            // Reset guild selection on page load
+            const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
+            if (guildSelect) {
+                guildSelect.value = "";
+                this.updateGuildBonuses("");
+            }
         }
 
         private calculatePoints(value: number): number {
@@ -350,10 +357,12 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 this.updatePoints(index, characteristics.minValue);
             });
             this.updateButtonStates();
-            this.updateGuildBonuses(""); // Reset guild bonuses
+            
+            // Reset guild selection
             const guildSelect = this.querySelector("#guildSelect") as HTMLSelectElement;
             if (guildSelect) {
-                guildSelect.value = ""; // Reset guild selection
+                guildSelect.value = "";
+                this.updateGuildBonuses("");
             }
         }
 
