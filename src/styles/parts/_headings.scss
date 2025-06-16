@@ -14,7 +14,7 @@ $heading-scale-factor: 0.1;
 
 // Generate heading sizes using a function
 @function calculate-heading-size($level) {
-    @return 1rem + (0.1 * (7 - $level));
+    @return 2rem - (0.2 * ($level - 1));
 }
 
 // Heading styles
