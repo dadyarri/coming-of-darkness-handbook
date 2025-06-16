@@ -16,9 +16,57 @@ const {
     defaultValues = Array(amountOfColumns - 1).fill(characteristics.minValue),
 } = Astro.props;
 const guilds = await getCollection("guilds");
+
+// Merge consecutive prices with the same cost
+const mergedPrices = characteristics.prices.reduce((acc, price, index, array) => {
+    if (index === 0) {
+        acc.push({ ...price });
+        return acc;
+    }
+
+    const prevPrice = acc[acc.length - 1];
+    if (prevPrice.price === price.price && prevPrice.to === price.from) {
+        prevPrice.to = price.to;
+    } else {
+        acc.push({ ...price });
+    }
+    return acc;
+}, [] as typeof characteristics.prices);
 ---
 
 <point-buy-container data-guilds={JSON.stringify(guilds)} data-characteristic-ids={JSON.stringify(characteristicsIds)}>
+    <div class="point-buy-rules">
+        <details class="point-buy-rules__details">
+            <summary class="point-buy-rules__summary">
+                <Icon name="game-icons:scroll-unfurled" class="point-buy-rules__icon" />
+                Правила закупа характеристик
+            </summary>
+            <div class="point-buy-rules__content">
+                <p class="point-buy-rules__description">
+                    Доступно очков: {characteristics.availablePoints}
+                </p>
+                <table class="point-buy-rules__table">
+                    <thead>
+                        <tr>
+                            <th>Значение</th>
+                            <th>Стоимость</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {
+                            mergedPrices.map((price) => (
+                                <tr>
+                                    <td>{price.from} → {price.to}</td>
+                                    <td>{price.price}</td>
+                                </tr>
+                            ))
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </details>
+    </div>
+
     <div class="guild-selector">
         <label for="guildSelect" class="guild-selector__label">
             Гильдия:

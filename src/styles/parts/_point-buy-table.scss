@@ -179,6 +179,47 @@
   }
 }
 
+.point-buy-rules {
+  margin-bottom: 1rem;
+  display: none;
+  width: 100%;
+  max-width: 780px;
+
+  &__details {
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+    width: 100%;
+    max-width: 800px;
+  }
+
+  &__summary {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  &__icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  &__content {
+    margin-top: 1rem;
+  }
+
+  &__description {
+    margin-bottom: 1rem;
+  }
+}
+
 @include respond-to('md') {
   .point-buy-table {
     &__cell {
@@ -192,6 +233,10 @@
 
   .point-buy-table {
     display: grid;
+  }
+
+  .point-buy-rules {
+    display: block;
   }
 
   .reset-button {
