@@ -1,12 +1,14 @@
 ---
 import { Icon } from 'astro-icon/components';
 import characteristics from '../data/characteristics.json';
+import { getCollection } from 'astro:content';
 
 type Props = {
     defaultValues?: number[];
 }
 
-const characteristicsNames = ['ТЛС', 'РЕФ', 'БДТ', 'МСТ', 'РАЗ'];
+const characteristicsNames = (await getCollection('characteristics'))
+    .map(i => i.data.short);
 
 const amountOfColumns = characteristicsNames.length + 1;
 
