@@ -2,7 +2,7 @@
 import { Icon } from "astro-icon/components";
 ---
 
-<div id="auth-container" class="auth-container">
+<div class="auth-container">
     <button id="auth-button" class="auth-button">
         <Icon name="lucide:log-in" />
         <span>Войти с Discord</span>
@@ -19,52 +19,52 @@ import { Icon } from "astro-icon/components";
 </div>
 
 <script>
-    import '../lib/supabaseClient';
-    
-    const authButton = document.getElementById('auth-button');
-    const userMenu = document.getElementById('user-menu');
-    const userAvatar = document.getElementById('user-avatar') as HTMLImageElement;
-    const userName = document.getElementById('user-name');
-    const signOutButton = document.getElementById('sign-out');
-    
+    import { supabase } from "../lib/supabase";
+
+    const authButton = document.getElementById("auth-button");
+    const userMenu = document.getElementById("user-menu");
+    const userAvatar = document.getElementById("user-avatar") as HTMLImageElement;
+    const userName = document.getElementById("user-name");
+    const signOutButton = document.getElementById("sign-out");
+
     const updateUI = (user: any) => {
         if (user) {
-            authButton?.classList.add('hidden');
-            userMenu?.classList.remove('hidden');
+            authButton?.classList.add("hidden");
+            userMenu?.classList.remove("hidden");
             if (user.user_metadata?.avatar_url) {
                 userAvatar.src = user.user_metadata.avatar_url;
             }
-            userName!.textContent = user.user_metadata?.full_name || user.email || 'User';
+            userName!.textContent = user.user_metadata?.full_name || user.email || "User";
         } else {
-            authButton?.classList.remove('hidden');
-            userMenu?.classList.add('hidden');
+            authButton?.classList.remove("hidden");
+            userMenu?.classList.add("hidden");
         }
     };
 
     // Check initial session
-    window.supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
         updateUI(session?.user);
     });
 
     // Listen for auth changes
-    window.supabase.auth.onAuthStateChange((_event, session) => {
+    supabase.auth.onAuthStateChange((_event, session) => {
         updateUI(session?.user);
     });
-    
-    authButton?.addEventListener('click', async () => {
-        const { error } = await window.supabase.auth.signInWithOAuth({
-            provider: 'discord'
+
+    authButton?.addEventListener("click", async () => {
+        const { error } = await supabase.auth.signInWithOAuth({
+            provider: "discord",
         });
-        
+
         if (error) {
-            console.error('Error:', error.message);
+            console.error("Error:", error.message);
         }
     });
 
-    signOutButton?.addEventListener('click', async () => {
-        const { error } = await window.supabase.auth.signOut();
+    signOutButton?.addEventListener("click", async () => {
+        const { error } = await supabase.auth.signOut();
         if (error) {
-            console.error('Error:', error.message);
+            console.error("Error:", error.message);
         }
     });
 </script>
@@ -148,15 +148,10 @@ import { Icon } from "astro-icon/components";
         &:hover {
             background-color: var(--bg-3);
         }
-
-        span {
-            @media (max-width: 768px) {
-                display: none;
-            }
-        }
     }
 
     .hidden {
         display: none;
     }
-</style> 
+</style>
+
