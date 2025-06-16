@@ -209,10 +209,16 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         </div>
     </div>
 
-    <button class="reset-button" id="resetButton">
-        <Icon name="game-icons:return-arrow" />
-        Сбросить
-    </button>
+    <div class="button-group">
+        <button class="point-buy-action-button point-buy-action-button" id="resetButton">
+            <Icon name="game-icons:return-arrow" class="point-buy-action-button__icon" />
+            Сбросить
+        </button>
+        <button class="point-buy-action-button" id="exportButton">
+            <Icon name="game-icons:share" class="point-buy-action-button__icon" />
+            Экспорт
+        </button>
+    </div>
 
     <div class="mobile-placeholder">
         <Icon name="game-icons:smartphone" class="mobile-placeholder__icon" />
@@ -462,10 +468,39 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             this.updateButtonStates();
         }
 
+        private exportData(): void {
+            const data = {
+                selectedCategories: Array.from(this.selectedBonuses.entries()).map(([category, sourceId]) => {
+                    return {
+                        categoryId: category,
+                        sourceId: sourceId
+                    };
+                }),
+                characteristics: this.characteristicIds.map((id, index) => {
+                    const baseValue = parseInt(
+                        this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
+                    );
+                    const { total: totalBonus } = this.calculateTotalBonus(index, baseValue);
+                    return {
+                        id,
+                        value: Math.min(baseValue + totalBonus, characteristics.maxValue)
+                    };
+                })
+            };
+
+            // TODO: API Requests (?) to export buyed characteristics to character list
+            console.log(data);
+        }
+
         private setupEventListeners(): void {
             const resetButton = this.querySelector("#resetButton");
             if (resetButton) {
                 resetButton.addEventListener("click", () => this.handleResetClick());
+            }
+
+            const exportButton = this.querySelector("#exportButton");
+            if (exportButton) {
+                exportButton.addEventListener("click", () => this.exportData());
             }
 
             // Setup listeners for all bonus selectors

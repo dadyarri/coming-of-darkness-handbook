@@ -168,9 +168,17 @@
   }
 }
 
-.reset-button {
-  display: none !important;
+.button-group {
+  display: none;
+  gap: 1rem;
   margin-top: 1rem;
+
+  @include respond-to('md') {
+    display: flex;
+  }
+}
+
+.point-buy-action-button {
   padding: 0.5rem 1rem;
   border: 1px solid var(--border-color);
   background-color: var(--bg-2);
@@ -184,17 +192,18 @@
   align-items: center;
   gap: 0.5rem;
 
-  &__icon {
-    width: 16px;
-    height: 16px;
-  }
-
   &:hover {
     background-color: var(--bg-3);
   }
 
   &:active {
     background-color: var(--primary-color);
+  }
+
+
+  &__icon {
+    width: 16px;
+    height: 16px;
   }
 }
 
