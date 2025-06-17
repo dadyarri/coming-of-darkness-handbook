@@ -34,30 +34,37 @@ const bonusCategories = {
 };
 
 // Merge consecutive prices with the same cost
-const mergedPrices = characteristics.prices.reduce((acc, price, index, array) => {
-    if (index === 0) {
-        acc.push({ ...price });
-        return acc;
-    }
+const mergedPrices = characteristics.prices.reduce(
+    (acc, price, index, array) => {
+        if (index === 0) {
+            acc.push({ ...price });
+            return acc;
+        }
 
-    const prevPrice = acc[acc.length - 1];
-    if (prevPrice.price === price.price && prevPrice.to === price.from) {
-        prevPrice.to = price.to;
-    } else {
-        acc.push({ ...price });
-    }
-    return acc;
-}, [] as typeof characteristics.prices);
+        const prevPrice = acc[acc.length - 1];
+        if (prevPrice.price === price.price && prevPrice.to === price.from) {
+            prevPrice.to = price.to;
+        } else {
+            acc.push({ ...price });
+        }
+        return acc;
+    },
+    [] as typeof characteristics.prices,
+);
+
 ---
 
-<point-buy-container 
-    data-bonus-categories={JSON.stringify(bonusCategories)} 
+<point-buy-container
+    data-bonus-categories={JSON.stringify(bonusCategories)}
     data-characteristic-ids={JSON.stringify(characteristicsIds)}
 >
     <div class="point-buy-rules">
         <details class="point-buy-rules__details">
             <summary class="point-buy-rules__summary">
-                <Icon name="game-icons:scroll-unfurled" class="point-buy-rules__icon" />
+                <Icon
+                    name="game-icons:scroll-unfurled"
+                    class="point-buy-rules__icon"
+                />
                 Правила закупа характеристик
             </summary>
             <div class="point-buy-rules__content">
@@ -75,7 +82,9 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                         {
                             mergedPrices.map((price) => (
                                 <tr>
-                                    <td>{price.from} → {price.to}</td>
+                                    <td>
+                                        {price.from} → {price.to}
+                                    </td>
                                     <td>{price.price}</td>
                                 </tr>
                             ))
@@ -88,21 +97,30 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
     <div class="bonus-selectors">
         {
-            Object.entries(bonusCategories).map(([category, { label, sources }]) => (
-                <div class="bonus-selector">
-                    <label for={`${category}Select`} class="bonus-selector__label">
-                        {label}:
-                    </label>
-                    <select id={`${category}Select`} class="bonus-selector__select" data-category={category}>
-                        <option value="">—</option>
-                        {
-                            sources.map((source) => (
-                                <option value={source.id}>{source.data.title}</option>
-                            ))
-                        }
-                    </select>
-                </div>
-            ))
+            Object.entries(bonusCategories).map(
+                ([category, { label, sources }]) => (
+                    <div class="bonus-selector">
+                        <label
+                            for={`${category}Select`}
+                            class="bonus-selector__label"
+                        >
+                            {label}:
+                        </label>
+                        <select
+                            id={`${category}Select`}
+                            class="bonus-selector__select"
+                            data-category={category}
+                        >
+                            <option value="">—</option>
+                            {sources.map((source) => (
+                                <option value={source.id}>
+                                    {source.data.title}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                ),
+            )
         }
     </div>
 
@@ -196,13 +214,17 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         </div>
 
         <div class="point-buy-table__row">
-            <div class="point-buy-table__cell point-buy-table__cell--first-column">
+            <div
+                class="point-buy-table__cell point-buy-table__cell--first-column"
+            >
                 Итого
             </div>
             {
                 defaultValues.map((_, index) => (
                     <div class="point-buy-table__cell">
-                        <span class="total-value" data-index={index}>0</span>
+                        <span class="total-value" data-index={index}>
+                            0
+                        </span>
                     </div>
                 ))
             }
@@ -210,12 +232,22 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
     </div>
 
     <div class="button-group">
-        <button class="point-buy-action-button point-buy-action-button" id="resetButton">
-            <Icon name="game-icons:return-arrow" class="point-buy-action-button__icon" />
+        <button
+            class="point-buy-action-button point-buy-action-button"
+            id="resetButton"
+        >
+            <Icon
+                name="game-icons:return-arrow"
+                class="point-buy-action-button__icon"
+            />
             Сбросить
         </button>
+
         <button class="point-buy-action-button" id="exportButton">
-            <Icon name="game-icons:share" class="point-buy-action-button__icon" />
+            <Icon
+                name="game-icons:share"
+                class="point-buy-action-button__icon"
+            />
             Экспорт
         </button>
     </div>
@@ -237,6 +269,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
 <script>
     import characteristics from "../data/characteristics.json";
+    import { supabase } from "../lib/supabase";
 
     interface BonusSource {
         id: string;
@@ -268,15 +301,29 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         connectedCallback() {
             this.initializePoints();
             this.setupEventListeners();
-            this.bonusCategories = JSON.parse(this.dataset.bonusCategories ?? "{}");
-            this.characteristicIds = JSON.parse(this.dataset.characteristicIds ?? "[]");
-            
+            this.bonusCategories = JSON.parse(
+                this.dataset.bonusCategories ?? "{}",
+            );
+            this.characteristicIds = JSON.parse(
+                this.dataset.characteristicIds ?? "[]",
+            );
+
             // Reset all bonus selections on page load
             const selects = this.querySelectorAll(".bonus-selector__select");
             selects.forEach((select) => {
                 (select as HTMLSelectElement).value = "";
             });
             this.updateBonuses();
+
+            // Listen for auth changes
+            supabase.auth.onAuthStateChange((_event, session) => {
+                const exportButton = this.querySelector("#exportButton");
+                if (exportButton) {
+                    (exportButton as HTMLElement).style.display = session?.user
+                        ? "flex"
+                        : "none";
+                }
+            });
         }
 
         private calculatePoints(value: number): number {
@@ -323,7 +370,10 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             return availablePoints;
         }
 
-        private calculateTotalBonus(index: number, baseValue: number): { total: number; details: string[] } {
+        private calculateTotalBonus(
+            index: number,
+            baseValue: number,
+        ): { total: number; details: string[] } {
             const characteristicId = this.characteristicIds[index];
             let totalBonus = 0;
             const bonusDetails: string[] = [];
@@ -333,22 +383,30 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             this.selectedBonuses.forEach((sourceId, category) => {
                 const categoryData = this.bonusCategories[category];
                 if (categoryData) {
-                    const source = categoryData.sources.find(s => s.id === sourceId);
+                    const source = categoryData.sources.find(
+                        (s) => s.id === sourceId,
+                    );
                     if (source) {
-                        const bonus = source.data.bonuses.find(
-                            b => b.characteristic.id === characteristicId
-                        )?.points || 0;
+                        const bonus =
+                            source.data.bonuses.find(
+                                (b) => b.characteristic.id === characteristicId,
+                            )?.points || 0;
 
                         if (bonus > 0) {
                             const actualBonus = Math.min(
                                 bonus,
-                                characteristics.maxValue - (baseValue + totalBonus)
+                                characteristics.maxValue -
+                                    (baseValue + totalBonus),
                             );
                             totalBonus += actualBonus;
-                            
+
                             // Store the actual bonus for this category
-                            const currentBonus = categoryBonuses.get(categoryData.label) || 0;
-                            categoryBonuses.set(categoryData.label, currentBonus + actualBonus);
+                            const currentBonus =
+                                categoryBonuses.get(categoryData.label) || 0;
+                            categoryBonuses.set(
+                                categoryData.label,
+                                currentBonus + actualBonus,
+                            );
                         }
                     }
                 }
@@ -369,23 +427,31 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             if (pointsElement) {
                 const pointsSpent = this.calculatePoints(value);
                 pointsElement.textContent = pointsSpent.toString();
-                
+
                 // Update total value and bonus display
-                const { total: totalBonus, details: bonusDetails } = this.calculateTotalBonus(index, value);
-                const totalValue = Math.min(value + totalBonus, characteristics.maxValue);
-                
+                const { total: totalBonus, details: bonusDetails } =
+                    this.calculateTotalBonus(index, value);
+                const totalValue = Math.min(
+                    value + totalBonus,
+                    characteristics.maxValue,
+                );
+
                 // Update bonus display
-                const bonusElement = this.querySelector(`.bonus-value[data-index="${index}"]`);
+                const bonusElement = this.querySelector(
+                    `.bonus-value[data-index="${index}"]`,
+                );
                 if (bonusElement) {
                     if (bonusDetails.length > 0) {
-                        bonusElement.innerHTML = `<ul class="bonus-list">${bonusDetails.map(detail => `<li>${detail}</li>`).join('')}</ul>`;
+                        bonusElement.innerHTML = `<ul class="bonus-list">${bonusDetails.map((detail) => `<li>${detail}</li>`).join("")}</ul>`;
                     } else {
                         bonusElement.textContent = "0";
                     }
                 }
 
                 // Update total value
-                const totalElement = this.querySelector(`.total-value[data-index="${index}"]`);
+                const totalElement = this.querySelector(
+                    `.total-value[data-index="${index}"]`,
+                );
                 if (totalElement) {
                     totalElement.textContent = totalValue.toString();
                 }
@@ -395,7 +461,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         private updateBonuses(): void {
             const values = Array.from(
                 this.querySelectorAll(".value-control__value"),
-            ).map(el => parseInt(el.textContent || "0"));
+            ).map((el) => parseInt(el.textContent || "0"));
 
             values.forEach((value, index) => {
                 this.updatePoints(index, value);
@@ -411,8 +477,11 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
             values.forEach((valueElement, index) => {
                 const currentValue = parseInt(valueElement.textContent || "0");
-                const { total: totalBonus } = this.calculateTotalBonus(index, currentValue);
-                
+                const { total: totalBonus } = this.calculateTotalBonus(
+                    index,
+                    currentValue,
+                );
+
                 const increaseButton = this.querySelector(
                     `.value-control__button[data-action="increase"][data-index="${index}"]`,
                 ) as HTMLButtonElement;
@@ -425,7 +494,9 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                         currentValue,
                         true,
                     );
-                    const wouldExceedMax = currentValue + 1 + totalBonus > characteristics.maxValue;
+                    const wouldExceedMax =
+                        currentValue + 1 + totalBonus >
+                        characteristics.maxValue;
                     increaseButton.disabled =
                         currentValue >= characteristics.maxValue ||
                         pointsNeeded > availablePoints ||
@@ -447,7 +518,7 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
                 valueElement.textContent = characteristics.minValue.toString();
                 this.updatePoints(index, characteristics.minValue);
             });
-            
+
             // Reset all bonus selections
             const selects = this.querySelectorAll(".bonus-selector__select");
             selects.forEach((select) => {
@@ -470,22 +541,32 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
 
         private exportData(): void {
             const data = {
-                selectedCategories: Array.from(this.selectedBonuses.entries()).map(([category, sourceId]) => {
+                selectedCategories: Array.from(
+                    this.selectedBonuses.entries(),
+                ).map(([category, sourceId]) => {
                     return {
                         categoryId: category,
-                        sourceId: sourceId
+                        sourceId: sourceId,
                     };
                 }),
                 characteristics: this.characteristicIds.map((id, index) => {
                     const baseValue = parseInt(
-                        this.querySelector(`.value-control__value[data-index="${index}"]`)?.textContent || "0"
+                        this.querySelector(
+                            `.value-control__value[data-index="${index}"]`,
+                        )?.textContent || "0",
                     );
-                    const { total: totalBonus } = this.calculateTotalBonus(index, baseValue);
+                    const { total: totalBonus } = this.calculateTotalBonus(
+                        index,
+                        baseValue,
+                    );
                     return {
                         id,
-                        value: Math.min(baseValue + totalBonus, characteristics.maxValue)
+                        value: Math.min(
+                            baseValue + totalBonus,
+                            characteristics.maxValue,
+                        ),
                     };
-                })
+                }),
             };
 
             // TODO: API Requests (?) to export buyed characteristics to character list
@@ -495,7 +576,9 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
         private setupEventListeners(): void {
             const resetButton = this.querySelector("#resetButton");
             if (resetButton) {
-                resetButton.addEventListener("click", () => this.handleResetClick());
+                resetButton.addEventListener("click", () =>
+                    this.handleResetClick(),
+                );
             }
 
             const exportButton = this.querySelector("#exportButton");
@@ -504,7 +587,9 @@ const mergedPrices = characteristics.prices.reduce((acc, price, index, array) =>
             }
 
             // Setup listeners for all bonus selectors
-            const bonusSelects = this.querySelectorAll(".bonus-selector__select");
+            const bonusSelects = this.querySelectorAll(
+                ".bonus-selector__select",
+            );
             bonusSelects.forEach((select) => {
                 select.addEventListener("change", (e) => {
                     const target = e.target as HTMLSelectElement;
