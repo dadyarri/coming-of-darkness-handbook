@@ -11,6 +11,26 @@
         color: var(--text-1);
     }
 
+    &__loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 200px;
+        text-align: center;
+        color: var(--text-1);
+    }
+
+    &__spinner {
+        width: 32px;
+        height: 32px;
+        border: 3px solid var(--border-color);
+        border-top: 3px solid var(--accent-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 1rem;
+    }
+
     &__icon {
         width: 48px;
         height: 48px;
@@ -30,12 +50,16 @@
     }
 }
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .character-card {
     background: var(--bg-2);
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    border: 1px solid var(--border-color);
 
     &:hover {
         transform: translateY(-2px);
@@ -81,4 +105,47 @@
         border-top: 1px solid var(--border-color);
         background: var(--bg-1);
     }
+}
+
+.character-card-wrapper {
+    position: relative;
+}
+
+.context-menu {
+    position: fixed;
+    display: none;
+    background: var(--bg-2);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    min-width: 120px;
+    overflow: hidden;
+}
+
+.context-menu__button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    color: var(--text-1);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 0.9rem;
+
+    &:hover {
+        background: var(--bg-3);
+    }
+
+    &--confirming {
+        color: var(--error-color, #ef4444);
+        font-weight: 600;
+    }
+}
+
+.context-menu__icon {
+    flex-shrink: 0;
 } 

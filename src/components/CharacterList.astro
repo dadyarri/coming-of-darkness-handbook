@@ -4,20 +4,105 @@ import { Icon } from "astro-icon/components";
 
 <div class="character-list">
     <div id="character-list-content">
-        <div class="character-list__empty">
-            <Icon name="game-icons:locked-chest" class="character-list__icon" />
-            <p class="character-list__text">Войдите, чтобы посмотреть своих персонажей</p>
+        <div class="character-list__loading">
+            <div class="character-list__spinner"></div>
+            <p class="character-list__text">Загрузка персонажей...</p>
         </div>
     </div>
+</div>
+
+<!-- Context Menu -->
+<div id="context-menu" class="context-menu">
+    <button id="delete-button" class="context-menu__button">
+        <svg class="context-menu__icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 6h18"/>
+            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+        <span id="delete-text">Удалить</span>
+    </button>
 </div>
 
 <script>
     import { supabase } from "../lib/supabase";
 
     const contentContainer = document.getElementById("character-list-content");
+    const contextMenu = document.getElementById("context-menu") as HTMLElement;
+    const deleteButton = document.getElementById("delete-button") as HTMLButtonElement;
+    const deleteText = document.getElementById("delete-text") as HTMLElement;
+
+    let currentCharacterId: string | null = null;
+    let isConfirming = false;
+
+    const showLoading = () => {
+        if (!contentContainer) return;
+        contentContainer.innerHTML = `
+            <div class="character-list__loading">
+                <div class="character-list__spinner"></div>
+                <p class="character-list__text">Загрузка персонажей...</p>
+            </div>
+        `;
+    };
+
+    const showContextMenu = (event: MouseEvent, characterId: string) => {
+        event.preventDefault();
+        currentCharacterId = characterId;
+        isConfirming = false;
+        
+        contextMenu.style.display = 'block';
+        contextMenu.style.left = event.pageX + 'px';
+        contextMenu.style.top = event.pageY + 'px';
+        
+        deleteText.textContent = 'Удалить';
+        deleteButton.classList.remove('context-menu__button--confirming');
+    };
+
+    const hideContextMenu = () => {
+        contextMenu.style.display = 'none';
+        currentCharacterId = null;
+        isConfirming = false;
+    };
+
+    const deleteCharacter = async () => {
+        if (!currentCharacterId) return;
+
+        try {
+            const { error } = await supabase
+                .from('character_lists')
+                .delete()
+                .eq('id', currentCharacterId);
+
+            if (error) throw error;
+
+            // Refresh the character list
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                updateUI(user);
+            }
+        } catch (error) {
+            console.error('Error deleting character:', error);
+        } finally {
+            hideContextMenu();
+        }
+    };
+
+    const handleDeleteClick = () => {
+        if (!isConfirming) {
+            // First click - show confirmation
+            isConfirming = true;
+            deleteText.textContent = 'Точно?';
+            deleteButton.classList.add('context-menu__button--confirming');
+        } else {
+            // Second click - delete
+            deleteCharacter();
+        }
+    };
 
     const updateUI = async (user: any) => {
         if (!contentContainer) return;
+
+        // Show loading spinner
+        showLoading();
 
         if (!user) {
             contentContainer.innerHTML = `
@@ -63,24 +148,34 @@ import { Icon } from "astro-icon/components";
             contentContainer.innerHTML = `
                 <div class="character-list__grid">
                     ${charactersWithPortraits.map(character => `
-                        <div class="character-card">
-                            <div class="character-card__portrait">
-                                ${character.portraitUrl 
-                                    ? `<img 
-                                        src="${character.portraitUrl}" 
-                                        alt="${character.name} portrait"
-                                        class="character-card__image"
-                                    />`
-                                    : `<div class="character-card__placeholder">
-                                        <svg class="character-card__placeholder-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                                    </div>`
-                                }
-                            </div>
-                            <h3 class="character-card__name">${character.name}</h3>
+                        <div class="character-card-wrapper">
+                            <a href="/character?id=${character.id}" class="character-card">
+                                <div class="character-card__portrait">
+                                    ${character.portraitUrl 
+                                        ? `<img 
+                                            src="${character.portraitUrl}" 
+                                            alt="${character.name} portrait"
+                                            class="character-card__image"
+                                        />`
+                                        : `<div class="character-card__placeholder">
+                                            <svg class="character-card__placeholder-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                        </div>`
+                                    }
+                                </div>
+                                <h3 class="character-card__name">${character.name}</h3>
+                            </a>
                         </div>
                     `).join('')}
                 </div>
             `;
+
+            // Add context menu event listeners
+            const characterCards = contentContainer.querySelectorAll('.character-card-wrapper');
+            characterCards.forEach((card, index) => {
+                card.addEventListener('contextmenu', (event) => {
+                    showContextMenu(event as MouseEvent, charactersWithPortraits[index].id);
+                });
+            });
         } catch (error) {
             console.error('Error loading characters:', error);
             contentContainer.innerHTML = `
@@ -91,6 +186,23 @@ import { Icon } from "astro-icon/components";
             `;
         }
     };
+
+    // Event listeners
+    deleteButton.addEventListener('click', handleDeleteClick);
+
+    // Hide context menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!contextMenu.contains(event.target as Node)) {
+            hideContextMenu();
+        }
+    });
+
+    // Hide context menu on escape key
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            hideContextMenu();
+        }
+    });
 
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
