@@ -8,7 +8,7 @@
 }
 
 .bonus-selectors {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr;
   gap: 1rem;
   margin-bottom: 1rem;
@@ -266,6 +266,10 @@
 
   .point-buy-rules {
     display: block;
+  }
+
+  .bonus-selectors {
+    display: grid;
   }
 
   .reset-button {
