@@ -835,7 +835,7 @@ const mergedPrices = characteristics.prices.reduce(
                 const characterData = {
                     name,
                     portrait: portraitFilename,
-                    data: { exportData },
+                    data: { ...exportData },
                     owner: user.id
                 };
 
