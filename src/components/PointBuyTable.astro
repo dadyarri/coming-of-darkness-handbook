@@ -8,7 +8,7 @@ type Props = {
 };
 
 const characteristicsCollection = await getCollection("characteristics");
-const characteristicsNames = characteristicsCollection.map((i) => i.data.short);
+const characteristicsNames = characteristicsCollection.map((i) => i.data.title);
 const characteristicsIds = characteristicsCollection.map((i) => i.id);
 
 const amountOfColumns = characteristicsNames.length + 1;
