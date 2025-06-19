@@ -243,13 +243,70 @@ const mergedPrices = characteristics.prices.reduce(
             Сбросить
         </button>
 
-        <button class="point-buy-action-button" id="exportButton">
-            <Icon
-                name="game-icons:share"
-                class="point-buy-action-button__icon"
-            />
-            Экспорт
-        </button>
+        <div class="export-dropdown">
+            <button class="point-buy-action-button" id="exportButton">
+                <Icon
+                    name="game-icons:share"
+                    class="point-buy-action-button__icon"
+                />
+                Экспорт
+                <Icon
+                    name="lucide:chevron-down"
+                    class="export-dropdown__chevron"
+                />
+            </button>
+            <div class="export-dropdown__content" id="exportDropdown">
+                <div class="export-dropdown__loading">
+                    <div class="export-dropdown__spinner"></div>
+                    <span>Загрузка персонажей...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Character Modal -->
+    <div class="modal-overlay" id="newCharacterModal">
+        <div class="modal">
+            <div class="modal__header">
+                <h3>Новый персонаж</h3>
+                <button class="modal__close" id="closeModal">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6L6 18"/>
+                        <path d="M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <form class="modal__form" id="newCharacterForm">
+                <div class="form-group">
+                    <label for="characterName">Имя персонажа</label>
+                    <input 
+                        type="text" 
+                        id="characterName" 
+                        name="name" 
+                        required 
+                        placeholder="Введите имя персонажа"
+                    />
+                </div>
+                <div class="form-group">
+                    <label for="characterPortrait">Портрет (необязательно)</label>
+                    <input 
+                        type="file" 
+                        id="characterPortrait" 
+                        name="portrait" 
+                        accept="image/*"
+                    />
+                    <div class="file-preview" id="filePreview"></div>
+                </div>
+                <div class="modal__actions">
+                    <button type="button" class="modal__cancel" id="cancelModal">
+                        Отмена
+                    </button>
+                    <button type="submit" class="modal__submit">
+                        Создать
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
     <div class="mobile-placeholder">
@@ -568,9 +625,272 @@ const mergedPrices = characteristics.prices.reduce(
                     };
                 }),
             };
+        }
 
-            // TODO: API Requests (?) to export buyed characteristics to character list
-            console.log(data);
+        private async loadCharacters(): Promise<any[]> {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return [];
+
+            const { data: characters, error } = await supabase
+                .from('character_lists')
+                .select('*')
+                .eq('owner', user.id);
+
+            if (error) {
+                console.error('Error loading characters:', error);
+                return [];
+            }
+
+            console.log('Loaded characters:', characters);
+            if (characters) {
+                characters.forEach(char => {
+                    console.log(`Character: ${char.name}, ID: ${char.id}, ID type: ${typeof char.id}`);
+                });
+            }
+
+            return characters || [];
+        }
+
+        private async updateExportDropdown(): Promise<void> {
+            const dropdown = this.querySelector("#exportDropdown") as HTMLElement;
+            if (!dropdown) return;
+
+            const characters = await this.loadCharacters();
+            
+            if (characters.length === 0) {
+                dropdown.innerHTML = `
+                    <div class="export-dropdown__empty">
+                        <span>Нет персонажей</span>
+                    </div>
+                    <button class="export-dropdown__item" id="createNewCharacter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"/>
+                            <path d="M12 5v14"/>
+                        </svg>
+                        <span>Создать нового</span>
+                    </button>
+                `;
+            } else {
+                dropdown.innerHTML = `
+                    ${characters.map(character => `
+                        <button class="export-dropdown__item" data-character-id="${character.id}">
+                            <span>${character.name}</span>
+                        </button>
+                    `).join('')}
+                    <div class="export-dropdown__separator"></div>
+                    <button class="export-dropdown__item" id="createNewCharacter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 12h14"/>
+                            <path d="M12 5v14"/>
+                        </svg>
+                        <span>Создать нового</span>
+                    </button>
+                `;
+            }
+
+            // Add event listeners for character selection
+            const characterButtons = dropdown.querySelectorAll('[data-character-id]');
+            characterButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const characterId = parseInt((button as HTMLElement).dataset.characterId ?? "0");
+                    if (characterId) {
+                        this.exportToCharacter(characterId);
+                    }
+                    this.toggleExportDropdown();
+                });
+            });
+
+            // Add event listener for create new character
+            const createButton = dropdown.querySelector('#createNewCharacter');
+            if (createButton) {
+                createButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.showNewCharacterModal();
+                    this.toggleExportDropdown();
+                });
+            }
+        }
+
+        private toggleExportDropdown(): void {
+            const dropdown = this.querySelector("#exportDropdown") as HTMLElement;
+            if (!dropdown) return;
+
+            const isVisible = dropdown.classList.contains('export-dropdown__content--visible');
+            
+            if (isVisible) {
+                dropdown.classList.remove('export-dropdown__content--visible');
+            } else {
+                dropdown.classList.add('export-dropdown__content--visible');
+                this.updateExportDropdown();
+            }
+        }
+
+        private showNewCharacterModal(): void {
+            const modal = this.querySelector("#newCharacterModal") as HTMLElement;
+            if (modal) {
+                modal.classList.add('modal-overlay--visible');
+            }
+        }
+
+        private hideNewCharacterModal(): void {
+            const modal = this.querySelector("#newCharacterModal") as HTMLElement;
+            if (modal) {
+                modal.classList.remove('modal-overlay--visible');
+                // Reset form
+                const form = this.querySelector("#newCharacterForm") as HTMLFormElement;
+                if (form) {
+                    form.reset();
+                }
+                const filePreview = this.querySelector("#filePreview") as HTMLElement;
+                if (filePreview) {
+                    filePreview.innerHTML = '';
+                }
+            }
+        }
+
+        private async exportToCharacter(characterId: number): Promise<void> {
+            const exportData = this.getExportData();
+            
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    console.error('User not authenticated');
+                    return;
+                }
+
+                // Get current character data
+                const { data: character, error: fetchError } = await supabase
+                    .from('character_lists')
+                    .select('data')
+                    .eq('id', characterId)
+                    .eq('owner', user.id)
+                    .single();
+
+                if (fetchError) {
+                    console.error('Error fetching character:', fetchError);
+                    throw fetchError;
+                }
+
+                // Merge with existing data - override pointBuy if it exists
+                const existingData = character.data || {};
+                const mergedData = {
+                    ...existingData,
+                    ...exportData  // This will override any existing pointBuy
+                };
+
+                const { error: updateError } = await supabase
+                    .from('character_lists')
+                    .update({ data: mergedData })
+                    .eq('id', characterId)
+                    .eq('owner', user.id);
+
+                if (updateError) {
+                    console.error('Error updating character:', updateError);
+                    throw updateError;
+                }
+
+            } catch (error) {
+                console.error('Error updating character:', error);
+                // You could show an error message here
+            }
+        }
+
+        private async createNewCharacter(formData: FormData): Promise<void> {
+            const exportData = this.getExportData();
+            const name = formData.get('name') as string;
+            const portraitFile = formData.get('portrait') as File;
+
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (!user) {
+                    console.error('User not authenticated');
+                    return;
+                }
+
+                console.log('Creating new character with name:', name);
+                console.log('Export data:', exportData);
+
+                let portraitFilename = null;
+
+                // Upload portrait if provided
+                if (portraitFile && portraitFile.size > 0) {
+                    const fileExt = portraitFile.name.split('.').pop();
+                    const fileName = `${Date.now()}.${fileExt}`;
+                    
+                    console.log('Uploading portrait:', fileName);
+                    
+                    const { error: uploadError } = await supabase.storage
+                        .from('cod-portraits')
+                        .upload(fileName, portraitFile);
+
+                    if (uploadError) {
+                        console.error('Error uploading portrait:', uploadError);
+                        throw uploadError;
+                    }
+                    portraitFilename = fileName;
+                    console.log('Portrait uploaded successfully:', portraitFilename);
+                }
+
+                const characterData = {
+                    name,
+                    portrait: portraitFilename,
+                    data: { exportData },
+                    owner: user.id
+                };
+
+                console.log('Character data to be inserted:', characterData);
+
+                // Create character - pass data as object for JSONB
+                const { data: insertResult, error: insertError } = await supabase
+                    .from('character_lists')
+                    .insert(characterData)
+                    .select();
+
+                if (insertError) {
+                    console.error('Error creating character:', insertError);
+                    throw insertError;
+                }
+
+                console.log('Insert result:', insertResult);
+                console.log('Character created successfully');
+                this.hideNewCharacterModal();
+                // You could show a success message here
+            } catch (error) {
+                console.error('Error creating character:', error);
+                // You could show an error message here
+            }
+        }
+
+        private getExportData(): any {
+            return {
+                selectedCategories: Array.from(
+                    this.selectedBonuses.entries(),
+                ).map(([category, sourceId]) => {
+                    return {
+                        categoryId: category,
+                        sourceId: sourceId,
+                    };
+                }),
+                characteristics: this.characteristicIds.map((id, index) => {
+                    const baseValue = parseInt(
+                        this.querySelector(
+                            `.value-control__value[data-index="${index}"]`,
+                        )?.textContent || "0",
+                    );
+                    const { total: totalBonus } = this.calculateTotalBonus(
+                        index,
+                        baseValue,
+                    );
+                    return {
+                        id,
+                        value: Math.min(
+                            baseValue + totalBonus,
+                            characteristics.maxValue,
+                        ),
+                    };
+                }),
+            };
         }
 
         private setupEventListeners(): void {
@@ -583,7 +903,72 @@ const mergedPrices = characteristics.prices.reduce(
 
             const exportButton = this.querySelector("#exportButton");
             if (exportButton) {
-                exportButton.addEventListener("click", () => this.exportData());
+                exportButton.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    this.toggleExportDropdown();
+                });
+            }
+
+            // Close dropdown when clicking outside
+            document.addEventListener("click", (e) => {
+                const dropdown = this.querySelector("#exportDropdown") as HTMLElement;
+                const exportButton = this.querySelector("#exportButton") as HTMLElement;
+                
+                if (dropdown && exportButton && 
+                    !dropdown.contains(e.target as Node) && 
+                    !exportButton.contains(e.target as Node)) {
+                    dropdown.classList.remove('export-dropdown__content--visible');
+                }
+            });
+
+            // Modal event listeners
+            const modal = this.querySelector("#newCharacterModal") as HTMLElement;
+            const closeModal = this.querySelector("#closeModal") as HTMLElement;
+            const cancelModal = this.querySelector("#cancelModal") as HTMLElement;
+            const newCharacterForm = this.querySelector("#newCharacterForm") as HTMLFormElement;
+            const portraitInput = this.querySelector("#characterPortrait") as HTMLInputElement;
+
+            if (closeModal) {
+                closeModal.addEventListener("click", () => this.hideNewCharacterModal());
+            }
+
+            if (cancelModal) {
+                cancelModal.addEventListener("click", () => this.hideNewCharacterModal());
+            }
+
+            if (modal) {
+                modal.addEventListener("click", (e) => {
+                    if (e.target === modal) {
+                        this.hideNewCharacterModal();
+                    }
+                });
+            }
+
+            if (newCharacterForm) {
+                newCharacterForm.addEventListener("submit", async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(newCharacterForm);
+                    await this.createNewCharacter(formData);
+                });
+            }
+
+            if (portraitInput) {
+                portraitInput.addEventListener("change", (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    const filePreview = this.querySelector("#filePreview") as HTMLElement;
+                    
+                    if (file && filePreview) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            filePreview.innerHTML = `
+                                <img src="${e.target?.result}" alt="Preview" style="max-width: 100px; max-height: 100px; border-radius: 4px;" />
+                            `;
+                        };
+                        reader.readAsDataURL(file);
+                    } else if (filePreview) {
+                        filePreview.innerHTML = '';
+                    }
+                });
             }
 
             // Setup listeners for all bonus selectors
