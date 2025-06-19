@@ -20,6 +20,6 @@ const { Content } = await render(spell);
 ---
 
 <Layout>
-    <DetailCard data={await transformSpellToCardData(spell)} />
+    <DetailCard data={await transformSpellToCardData(spell)} collection="spells" />
     <Content/>
 </Layout>

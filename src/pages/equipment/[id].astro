@@ -20,6 +20,6 @@ const { Content } = await render(item);
 ---
 
 <Layout>
-    <DetailCard data={await transformItemToCardData(item)} />
+    <DetailCard data={await transformItemToCardData(item)} collection="equipment" />
     <Content/>
 </Layout> 

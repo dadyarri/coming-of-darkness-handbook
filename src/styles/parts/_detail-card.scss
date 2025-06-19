@@ -85,4 +85,25 @@
         font-size: 17px;
         color: var(--text-0);
     }
+}
+
+.detail-card__back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding: 0.4em 0.9em;
+    background: var(--bg-1);
+    color: var(--text-1);
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-family: var(--text-font);
+    border: 1px solid var(--border-color, #ccc);
+    transition: background 0.15s, color 0.15s;
+    cursor: pointer;
+}
+.detail-card__back:hover {
+    background: var(--bg-2);
+    color: var(--text-0);
 } 
