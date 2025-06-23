@@ -1,76 +1,117 @@
 ---
+interface Item {
+	text: string;
+	description?: string;
+	range?: { min: number; max: number };
+}
+
 interface Props {
-	items: Array<{
-		text: string;
-		description?: string;
-	}>;
+	items: Item[];
 	columnName: string;
 }
 
 const { items, columnName } = Astro.props;
-const hasDescriptions = items.some((item) => item.description);
+
+// Normalize items: assign min/max to each, auto-number singles
+const normalizedItems: Array<Item & { min: number; max: number } > = [];
+let current = 1;
+for (const item of items) {
+	if (item.range) {
+		let min = item.range.min;
+		let max = item.range.max;
+		const rangeSize = max - min;
+		if (min < current) {
+			min = current;
+			max = min + rangeSize;
+		}
+		normalizedItems.push({ ...item, min, max });
+		current = max + 1;
+	} else {
+		const min = current;
+		const max = current;
+		normalizedItems.push({ ...item, min, max });
+		current++;
+	}
+}
+const hasDescriptions = normalizedItems.some((item) => item.description);
+const maxRoll = Math.max(...normalizedItems.map(i => i.max));
 ---
 
 <div class="rollable-table">
-  <table class="rollable-table__table">
-    <thead class="rollable-table__header">
-      <tr>
-        <th class="rollable-table__cell rollable-table__cell--dice">d{items.length}</th>
-        <th class="rollable-table__cell">{columnName}</th>
-        {hasDescriptions && <th class="rollable-table__cell">Описание</th>}
-      </tr>
-    </thead>
-    <tbody class="rollable-table__body">
-      {items.map((item, index) => (
-        <tr class="rollable-table__row" data-index={index + 1}>
-          <td class="rollable-table__cell rollable-table__cell--number">{index + 1}</td>
-          <td class="rollable-table__cell">{item.text}</td>
-          {hasDescriptions && (
-            <td class="rollable-table__cell">{item.description || '—'}</td>
-          )}
-        </tr>
-      ))}
-    </tbody>
-  </table>
+	<table class="rollable-table__table">
+		<thead class="rollable-table__header">
+			<tr>
+				<th class="rollable-table__cell rollable-table__cell--dice" data-max-roll={maxRoll}>d{maxRoll}</th>
+				<th class="rollable-table__cell">{columnName}</th>
+				{hasDescriptions && <th class="rollable-table__cell">Описание</th>}
+			</tr>
+		</thead>
+		<tbody class="rollable-table__body">
+			{normalizedItems.map((item, index) => (
+				<tr class="rollable-table__row" data-min={item.min} data-max={item.max}>
+					<td class="rollable-table__cell rollable-table__cell--number">
+						{item.min === item.max ? item.min : `${item.min}-${item.max}`}
+					</td>
+					<td class="rollable-table__cell">{item.text}</td>
+					{hasDescriptions && (
+						<td class="rollable-table__cell">{item.description || '—'}</td>
+					)}
+				</tr>
+			))}
+		</tbody>
+	</table>
 </div>
 
 <script>
-  class RollableTable {
-    private table: HTMLElement;
-    private diceCell: HTMLElement;
-    private rows: NodeListOf<HTMLElement>;
+	class RollableTable {
+		private table: HTMLElement;
+		private diceCell: HTMLElement;
+		private rows: NodeListOf<HTMLElement>;
+		private maxRoll: number;
 
-    constructor() {
-      this.table = document.querySelector('.rollable-table')!;
-      this.diceCell = this.table.querySelector('.rollable-table__cell--dice')!;
-      this.rows = this.table.querySelectorAll('.rollable-table__row');
-      
-      this.init();
-    }
+		constructor(table: HTMLElement, diceCell: HTMLElement, maxRoll: number) {
+			this.table = table;
+			this.diceCell = diceCell;
+			this.rows = this.table.querySelectorAll('.rollable-table__row') as NodeListOf<HTMLElement>;
+			this.maxRoll = maxRoll;
+			this.init();
+		}
 
-    private init() {
-      this.diceCell.addEventListener('click', () => this.rollDice());
-    }
+		private init() {
+			this.diceCell.addEventListener('click', () => this.rollDice());
+		}
 
-    private rollDice() {
-      const max = this.rows.length;
-      const roll = Math.floor(Math.random() * max) + 1;
-      
-      // Remove highlight from all rows
-      this.rows.forEach(row => {
-        row.classList.remove('rollable-table__row--highlighted');
-      });
+		private rollDice() {
+			const roll = Math.floor(Math.random() * this.maxRoll) + 1;
+			// Remove highlight from all rows
+			this.rows.forEach(row => {
+				row.classList.remove('rollable-table__row--highlighted');
+			});
+			// Find the row whose range contains the roll
+			let targetRow: HTMLElement | null = null;
+			for (let i = 0; i < this.rows.length; i++) {
+				const row = this.rows[i];
+				const min = parseInt(row.getAttribute('data-min')!);
+				const max = parseInt(row.getAttribute('data-max')!);
+				if (roll >= min && roll <= max) {
+					targetRow = row;
+					break;
+				}
+			}
+			if (targetRow) {
+				targetRow.classList.add('rollable-table__row--highlighted');
+			}
+		}
+	}
 
-      // Add highlight to rolled row
-      const targetRow = this.table.querySelector(`[data-index="${roll}"]`);
-      if (targetRow) {
-        targetRow.classList.add('rollable-table__row--highlighted');
-      }
-    }
-  }
-
-  // Initialize when DOM is loaded
-  document.addEventListener('DOMContentLoaded', () => {
-    new RollableTable();
-  });
+	document.addEventListener('DOMContentLoaded', () => {
+		const tables = document.querySelectorAll('.rollable-table');
+		tables.forEach((table) => {
+			const diceCell = table.querySelector('.rollable-table__cell--dice');
+			const maxRoll = diceCell ? parseInt(diceCell.getAttribute('data-max-roll') || '1') : 1;
+			if (diceCell) {
+				new RollableTable(table as HTMLElement, diceCell as HTMLElement, maxRoll);
+			}
+		});
+	});
 </script> 
