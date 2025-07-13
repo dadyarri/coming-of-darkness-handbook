@@ -57,6 +57,7 @@ const spellTypes = defineCollection({
 	loader: glob({ pattern: "**/*.json", base: "./src/collections/spellTypes" }),
 	schema: z.object({
 		title: z.string().nonempty(),
+		color: z.string()
 	}),
 });
 
