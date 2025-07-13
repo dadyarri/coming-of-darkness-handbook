@@ -68,14 +68,24 @@ export async function getEquipmentRaritiesLegend() {
  * @returns Array of legend items with icon, title and href
  */
 export async function getSpellsLegend() {
-	const magicSpecializations = await getCollection("magicSpecializations");
-	return magicSpecializations
+	const [magicSpecializations, spellTypes] = await Promise.all([
+		getCollection("magicSpecializations"),
+		getCollection("spellTypes"),
+	]);
+
+	const result = magicSpecializations
 		.sort((a, b) => a.data.title.localeCompare(b.data.title, "ru"))
-		.map((spec) => ({
-			icon: spec.data.icon,
-			title: spec.data.title,
-			href: `/spells/type/${spec.id}`,
-		}));
+		.map((spec) => {
+			const type = spellTypes.find((t) => t.id === spec.data.type.id);
+			return {
+				icon: spec.data.icon,
+				title: spec.data.title,
+				href: `/spells/type/${spec.id}`,
+				color: type?.data.color || "#999", // или дефолт
+			};
+		});
+
+	return result;
 }
 
 /**
